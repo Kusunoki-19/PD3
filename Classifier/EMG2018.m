@@ -1,31 +1,58 @@
 clear
 %%
+%データのロード
+signals = {}; %cell配列
+labels = {}; %データラベル配列
+
+XTrain = {}; %学習用データ x : インプットcell配列
+YTrain = {}; %学習用データ y : 正解catetorical配列
 dataPath = 'data\EMG2018\train';
-[XTrain, YTrain, ] = recDir(dataPath,{}, {}, 1);
-YTrain = categorical(YTrain); %cell配列も物を学習データ用にcategorical配列に変換
+[signals, labels, ] = recDir(dataPath,{}, {}, 1);
 
-for i = 1 : size(XTrain,1)
-    disp(i)
-    [XTrain{i,1}] = fftEMG(XTrain{i,1});
+%cell配列を学習データ用にcategorical配列に変換
+YTrain = categorical(labels); 
+%EMGデータをFFTして学習用データに変換
+for i = 1 : size(signals,1)
+    [XTrain{i,1}] = fftEMG(signals{i,1});
 end
-dataDimention = 1;
-
-figure
-plot(XTrain{1},XTrain{75},XTrain{135},XTrain{175})
-%x軸ラベル
-xlabel("Time Step")
-%グラフタイトル
-title("Training Observation 1")
-%凡例
-legend("Feature " + string(1),'Location','northeastoutside')
 
 %%
-inputSize = dataDimention
+%データの表示
+figure
+index = [1,75,135,175];
+ax = cell(2*4);
+for i = (1:4)
+    ax{i} = subplot(2,4,i);
+    for j = (0:4)
+        if j == 0 
+            hold on
+        end
+        plot(ax{i},signals{index(i)+j,1});
+    end
+    
+    xlabel(ax{i},"Time Step");
+    title(ax{i},labels{index(i)});
+    
+    ax{4+i} = subplot(2,4,4+i);
+    for j = (0:4)
+        if j == 0
+            hold on
+        end
+        plot(ax{4+i},XTrain{index(i)+j,1});
+    end
+    xlabel(ax{4+i},"Frequency");
+    title(ax{4+i},labels{index(i)});
+end
+%legend('Dorsal','Grip','Relax','Ulnar')
+
+%%
+dataDimention = 1;
+inputSize = dataDimention;
 numClasses = 4;
 
 layers = [ ...
     sequenceInputLayer(inputSize)
-    bilstmLayer(800,'OutputMode','last')
+    bilstmLayer(400,'OutputMode','last')
     fullyConnectedLayer(numClasses)
     
     softmaxLayer
