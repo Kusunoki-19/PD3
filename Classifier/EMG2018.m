@@ -54,21 +54,9 @@ for i = 1 : length(d)
         tempY = strsplit(path,'\');
         tempY = tempY(end);
         tempY = tempY{1,1};
-        %{
-        if tempY == "Dorsal"
-            tempY = 1;
-        elseif tempY == "Grip"
-            tempY = 2;
-        elseif tempY == "Relax"
-            tempY = 3;
-        elseif tempY == "Ulnar"
-            tempY = 4;
-        end
-        %}
         Y{index,1} = tempY;
         index = index + 1;
     else
-        %fprintf('%s\t',d(i).name);
         pathNext = strcat(path,'\', d(i).name);
         [X,Y,index] = recDir(pathNext, X, Y, index);
     end
