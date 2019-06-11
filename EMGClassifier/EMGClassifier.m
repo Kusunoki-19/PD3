@@ -74,6 +74,8 @@ options = trainingOptions('adam', ...
     'Plots','training-progress');
 net = trainNetwork(XTrain,YTrain,layers,options);
 
+save('EMGClassifierNet.mat','EMGClassifierNet');
+
 %%
 %与えられたpathのディレクトリを再帰的に探索→そこに格納されているファイルを読み込み
 function [X,Y,index] = recDir(path, X, Y, index)

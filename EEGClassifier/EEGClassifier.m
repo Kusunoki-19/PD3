@@ -72,7 +72,9 @@ options = trainingOptions('adam', ...
     'Shuffle','once', ...
     'Verbose',0, ...
     'Plots','training-progress');
-net = trainNetwork(XTrain,YTrain,layers,options);
+EEGClassifierNet = trainNetwork(XTrain,YTrain,layers,options);
+
+save('EEGClassifierNet.mat','EEGClassifierNet');
 
 %%
 %与えられたpathのディレクトリを再帰的に探索→そこに格納されているファイルを読み込み
