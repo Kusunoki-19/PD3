@@ -34,7 +34,7 @@ for i = (1:4)
     title(ax{i},labels{index(i)});
     
     ax{4+i} = subplot(2,4,4+i);
-    for j = (0:4)
+    for j = (0:10)
         if j == 0
             hold on
         end
@@ -52,13 +52,16 @@ numClasses = 4;
 
 layers = [ ...
     sequenceInputLayer(inputSize)
-    bilstmLayer(400,'OutputMode','last')
-    fullyConnectedLayer(numClasses)
+    fullyConnectedLayer(2^11)
+    fullyConnectedLayer(2^6)
+    bilstmLayer(2^6,'OutputMode','last')
+    fullyConnectedLayer(2^7)
+    fullyConnectedLayer(4)
     
     softmaxLayer
     classificationLayer]
 maxEpochs = 100;
-miniBatchSize = 100;
+miniBatchSize = 20;
 
 options = trainingOptions('adam', ...
     'ExecutionEnvironment','cpu', ...
@@ -66,7 +69,7 @@ options = trainingOptions('adam', ...
     'MaxEpochs',maxEpochs, ...
     'MiniBatchSize',miniBatchSize, ...
     'SequenceLength','longest', ...
-    'Shuffle','never', ...
+    'Shuffle','once', ...
     'Verbose',0, ...
     'Plots','training-progress');
 net = trainNetwork(XTrain,YTrain,layers,options);
