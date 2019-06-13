@@ -1,5 +1,18 @@
 clear
 %%
+%PD3プロジェクトの全体のsystemディレクトリの取得
+
+curPath = split(pwd,'\'); %現在のディレクトリを'\'記号で分割し配列に代入
+systemPath = ""; %全体をまとめるsystemディレクトリ
+for i  = 1:length(curPath)
+    systemPath = strcat(systemPath, curPath(i));
+    systemPath = strcat(systemPath, '\');
+    if(curPath(i) == "system")
+        break;
+    end
+end
+dataPath = strcat(systemPath,"Data\");
+%%
 %データのロード
 signals = {}; %cell配列
 labels = {}; %データラベル配列
@@ -74,8 +87,7 @@ options = trainingOptions('adam', ...
     'Plots','training-progress');
 net = trainNetwork(XTrain,YTrain,layers,options);
 
-save('EMGClassifierNet.mat','EMGClassifierNet');
-
+save(strcat(dataPath,'Networks\EMGClassifierNet.mat'),'EMGClassifierNet');
 %%
 %与えられたpathのディレクトリを再帰的に探索→そこに格納されているファイルを読み込み
 function [X,Y,index] = recDir(path, X, Y, index)

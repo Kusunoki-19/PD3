@@ -1,13 +1,25 @@
 clear
 %%
+%PD3プロジェクトの全体のsystemディレクトリの取得
+
+curPath = split(pwd,'\'); %現在のディレクトリを'\'記号で分割し配列に代入
+systemPath = ""; %全体をまとめるsystemディレクトリ
+for i  = 1:length(curPath)
+    systemPath = strcat(systemPath, curPath(i));
+    systemPath = strcat(systemPath, '\');
+    if(curPath(i) == "system")
+        break;
+    end
+end
+dataPath = strcat(systemPath,"Data\");
+%%
 %データのロード
 signals = {}; %cell配列
 labels = {}; %データラベル配列
 
 XTrain = {}; %学習用データ x : インプットcell配列
 YTrain = {}; %学習用データ y : 正解catetorical配列
-dataPath = 'data\EMG2018\train';
-[signals, labels, ] = recDir(dataPath,{}, {}, 1);
+[signals, labels, ] = recDir(strcat(dataPath,"EMG2018\train"),{}, {}, 1);
 
 %cell配列を学習データ用にcategorical配列に変換
 YTrain = categorical(labels); 
@@ -74,7 +86,7 @@ options = trainingOptions('adam', ...
     'Plots','training-progress');
 EEGClassifierNet = trainNetwork(XTrain,YTrain,layers,options);
 
-save('EEGClassifierNet.mat','EEGClassifierNet');
+save(strcat(dataPath,'Networks\EEGClassifierNet.mat'),'EEGClassifierNet');
 
 %%
 %与えられたpathのディレクトリを再帰的に探索→そこに格納されているファイルを読み込み
