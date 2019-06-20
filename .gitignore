@@ -49,3 +49,17 @@ Thumbs.db
 
 #python bytecode cache, for some plugins.
 *.pyc
+EMGRecorder/slprj/ert/_sharedutils/shared_file.dmr
+EMGRecorder/EMGRecorder_ert_rtw/tlc/s0_b0_rxk0i_TLCInterface.tlc
+EMGRecorder/EMGRecorder_ert_rtw/tlc/s0_b0_rxk0i_ModelInitialize.tlc
+EMGRecorder/EMGRecorder_ert_rtw/tlc/s0_b0_rxk0i_ForcingFunction.tlc
+EMGRecorder/EMGRecorder_ert_rtw/tlc/EMGRecorder_codeIRInfo.tlc
+EMGRecorder/slprj/ert/EMGRecorder/tmwinternal/minfo.mat
+EMGRecorder/EMGRecorder_ert_rtw/tlc/s0_b0_rxk0i_Outputs.tlc
+EMGRecorder/EMGRecorder_ert_rtw/tlc/s0_b0_rxk0i_Functions.tlc
+EMGRecorder/EMGRecorder_ert_rtw/tlc/s0_b0_rxk0i_Derivatives.tlc
+EMGRecorder/EMGRecorder_ert_rtw/tlc/codeIRInfo.mat
+EMGRecorder/EMGRecorder_ert_rtw/EMGRecorder.rtw
+EMGRecorder/slprj/sl_proj.tmw
+EMGRecorder/EMGRecorder_ert_rtw/tlc/s0_b0_rxk0i_Terminate.tlc
+EMGRecorder/EMGRecorder_ert_rtw/build_exception.mat
