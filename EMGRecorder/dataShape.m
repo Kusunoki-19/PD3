@@ -35,6 +35,10 @@ function [X, Y] = demoCB(X, Y, name, dirs)
 end
 
 %%
+function [X, Y] = saveCB(X, Y, name, dirs)
+end
+
+%%
 function [X, Y] = readCB(X, Y, fileName, dirs)
 fprintf('%s\t',fileName);
 curPath = "";
