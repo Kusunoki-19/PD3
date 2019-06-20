@@ -1,0 +1,9 @@
+EEGObjectDisplayer/ObjectDisplayer/Library/
+EEGObjectDisplayer/ObjectDisplayer/Temp/
+EMGRecorder/EMGRecorder_ert_rtw/
+*.sln
+*.csproj
+*.lock
+EEGObjectDisplayer/ObjectDisplayer/.vs/ObjectDisplayer/v16/Server/sqlite3/storage.ide
+EEGObjectDisplayer/ObjectDisplayer/.vs/ObjectDisplayer/v16/Server/sqlite3/storage.ide-wal
+EEGObjectDisplayer/ObjectDisplayer/.vs/ObjectDisplayer/v16/Server/sqlite3/storage.ide-shm
