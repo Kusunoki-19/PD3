@@ -9,10 +9,12 @@ using System.Text;
 
 public class ObjectDisplayControl : MonoBehaviour
 {
-    public int RECEIVE_PORT = 25000;
-    public string SEND_HOST = "127.0.0.1";
-    public int SEND_PORT = 25001;
-    static UdpClient udp;
+    private UdpClient receiver;
+    private int RECEIVE_PORT = 25000;
+    private string SEND_HOST = "127.0.0.1";
+
+    private UdpClient sender;
+    private int SEND_PORT = 25001;
     int receiveData = 0;
     GameObject ball;
     GameObject stick;
@@ -22,10 +24,13 @@ public class ObjectDisplayControl : MonoBehaviour
 
 	// Use this for initialization
 	void Start () {
-        udp = new UdpClient(RECEIVE_PORT);
-        udp.Client.ReceiveTimeout = 1000;
+        receiver = new UdpClient(RECEIVE_PORT);
+        receiver.Client.ReceiveTimeout = 1000;
 
+        sender = new UdpClient();
+        sender.Connect(SEND_HOST, SEND_PORT);
 
+        //object initialize. fetch object, and display none
         ball = GameObject.Find("Sphere");
         stick = GameObject.Find("Cylinder");
         ball.SetActive(false);
@@ -36,7 +41,7 @@ public class ObjectDisplayControl : MonoBehaviour
     void Update()
     {
         IPEndPoint remoteEP = null;
-        byte[] data = udp.Receive(ref remoteEP);
+        byte[] data = receiver.Receive(ref remoteEP);
         //receiveData = BitConverter.ToInt32(data, 0);
         //Debug.Log(data);
         //Debug.Log(data[0]);
@@ -55,5 +60,6 @@ public class ObjectDisplayControl : MonoBehaviour
                 stick.SetActive(false);
                 break;
         }
+        sender.Send(data, data.Length);
 	}
 }
