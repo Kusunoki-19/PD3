@@ -1,8 +1,8 @@
-[X, Y, ~, ~, ~] = recDir({}, {}, 1,"D:\kusunoki\PD3\Data\EMG2018", @readCallback);
+[~, ~, ~, ~, ~] = recDir({}, {}, 1,"D:\kusunoki\PD3\Data\EMG2018", @readCB, @demoCB);
 
 %%
 %与えられたpathのディレクトリを再帰的に探索→そこに格納されているファイルを読み込み
-function [X, Y, index, dirs, fileCallback] = recDir(X, Y, index, dirs, fileCallback)
+function [X, Y, index, dirs, fileCB, folderCB] = recDir(X, Y, index, dirs, fileCB, folderCB)
 curPath = "";
 for i = 1 : length(dirs)
     curPath = strcat(curPath, dirs(i), '\');
@@ -18,18 +18,24 @@ for i = 1 : length(d)
     if d(i).isdir == 0 % file
         %callback
         fileName = d(i).name;
-        [X, Y] = fileCallback(X, Y, fileName, dirs);
+        [X, Y] = fileCB(X, Y, fileName, dirs);
     else % directory 
         folderName = d(i).name;
+        [X, Y] = folderCB(X, Y, folderName, dirs);
+        
         dirs(end+1) = folderName; %forward to child directory
-        [X, Y, index, dirs, ~] = recDir(X, Y, index, dirs, fileCallback);
+        [X, Y, index, dirs, ~, ~] = recDir(X, Y, index, dirs, fileCB, folderCB);
     end
 end
 dirs = dirs(1:end-1); %back to parent directory
 end
 
+%%
+function [X, Y] = demoCB(X, Y, name, dirs)
+end
 
-function [X, Y] = readCallback(X, Y, fileName, dirs)
+%%
+function [X, Y] = readCB(X, Y, fileName, dirs)
 fprintf('%s\t',fileName);
 curPath = "";
 for i = 1 : length(dirs)
