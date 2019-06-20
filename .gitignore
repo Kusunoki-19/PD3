@@ -1,9 +1,7 @@
 EEGObjectDisplayer/ObjectDisplayer/Library/
+EEGObjectDisplayer/ObjectDisplayer/Temp/UnityTempFile-4102589278241bb48b1f02977b559daf
 EEGObjectDisplayer/ObjectDisplayer/Temp/
 EMGRecorder/EMGRecorder_ert_rtw/
-*.sln
+EEGObjectDisplayer/ObjectDisplayer/.vs/
 *.csproj
-*.lock
-EEGObjectDisplayer/ObjectDisplayer/.vs/ObjectDisplayer/v16/Server/sqlite3/storage.ide
-EEGObjectDisplayer/ObjectDisplayer/.vs/ObjectDisplayer/v16/Server/sqlite3/storage.ide-wal
-EEGObjectDisplayer/ObjectDisplayer/.vs/ObjectDisplayer/v16/Server/sqlite3/storage.ide-shm
+*.sln
