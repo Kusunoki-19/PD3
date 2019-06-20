@@ -81,11 +81,11 @@ fprintf('\n----- %s -----\n',path);
 d = dir(path);
 
 for i = 1 : length(d)
-    if d(i).name == '.'
+    if d(i).name == '.' %to parent directory
         continue;
     end
     
-    if d(i).isdir == 0
+    if d(i).isdir == 0 %not directory
         fprintf('%s\t',d(i).name);
         tempX = importdata(strcat(path,'\',d(i).name)); %ÉfÅ[É^å^ÇÃà·Ç§Ç‡ÇÃÇ™Ç†Ç¡ÇΩÇÃÇ≈ÇªÇÃëŒçÙ
         if isstruct(tempX)
@@ -98,7 +98,7 @@ for i = 1 : length(d)
         tempY = tempY{1,1};
         Y{index,1} = tempY;
         index = index + 1;
-    else
+    else % directory 
         pathNext = strcat(path,'\', d(i).name);
         [X,Y,index] = recDir(pathNext, X, Y, index);
     end
