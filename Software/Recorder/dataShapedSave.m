@@ -1,27 +1,42 @@
-load('rawEEG.mat');
+%load('rawEEG.mat');
+rawData = testRawData
 
+[dataSets, labels] = clipDataSets(rawData)
+
+data
+
+function [dataSets,labels] = clipDataSets(rawData)
+
+label.old = -1;
+label.new = -1;
 setCount = 1;
-newLabel = "";
-preLabel = "";
-dataSets = {};
-clipA = 1; %data clip start point
-clipB = 1; %data clip end point
+anchor = 1;
 
-for index = 1:length(DataValues)
-    %renew parameter
-    increment(clipB);
-    newLabel = rawEEG(clipB,end);
+colLabel = 2;
+colTime = 1;
+
+dataSets = {};
+labels = {};
+
+label.new = rawData(1,colLabel);
+label.old = rawData(1,colLabel);
+
+for row = 1:length(rawData(:,1))
+    label.new = rawData(row,colLabel);
     
-    if newLabel ~= preLabel
-        %clip raw data
-        dataSets{setCount} = rawEEG(clipA:(clipB-1),1:(end-1))
-        %renew parameter
-        clipA = clipB;
-        preLabel = newLabel;
-        increment(setCount);
+    %If label has been changed, clip data set, and renew parameter.
+    if label.new ~= label.old
+        dataSets{setCount,1} = rawData(anchor:(row-1),(colLabel+1):end);
+        labels{setCount,1} = label.old;
+        anchor = row;
+        label.old = label.new;
+        setCount = setCount + 1;
     end
 end
 
-function [x] = increment(x)
-x = x + 1;
-end
+%Clip last label data set,
+%because last data set has no chance label change.
+dataSets{setCount,1} = rawData(anchor:(row),(colLabel+1):end);
+labels{setCount,1} = label.old;
+
+end 
