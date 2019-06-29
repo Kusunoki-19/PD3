@@ -1,7 +1,7 @@
 [~, ~, ~, ~, ~] = recDir({}, {}, 1,"D:\kusunoki\PD3\Data\EMG2018", @readCB, @demoCB);
 
 %%
-%与えられたpathのディレクトリを再帰的に探索→そこに格納されているファイルを読み込み
+%与えられたpathのディレクトリを再帰的に探索→そのときに与えられたコールバック関数を実行
 function [X, Y, index, dirs, fileCB, folderCB] = recDir(X, Y, index, dirs, fileCB, folderCB)
 curPath = "";
 for i = 1 : length(dirs)
