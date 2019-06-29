@@ -1,4 +1,6 @@
-[X, Y, ~, ~, ~] = recDir({}, {}, 1,"D:\_PD3\system\Software\Data\EMG2018", @readCB, @demoCB);
+function [X,Y] = dataReader(dataPath) 
+[X, Y, ~, ~, ~] = recDir({}, {}, 1,dataPath, @readCB, @demoCB);
+end
 
 function [X, Y] = readCB(X, Y, fileName, dirs)
 %READCB recDirのコールバック関数
