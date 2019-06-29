@@ -20,7 +20,8 @@ for row = 1:length(rawData(:,1))
     
     %If label has been changed, clip data set, and renew parameter.
     if label.new ~= label.old
-        dataSets{setCount,1} = rawData(anchor:(row-1),(colLabel+1):end);
+        dataSets{setCount,1} = rawData(anchor:(row-1),(colLabel+1):end);%clip
+        dataSets{setCount,1} = transpose(dataSets{setCount,1});%transpose
         labels{setCount,1} = label.old;
         anchor = row;
         label.old = label.new;
@@ -30,7 +31,8 @@ end
 
 %Clip last label data set,
 %because last data set has no chance label change.
-dataSets{setCount,1} = rawData(anchor:(row),(colLabel+1):end);
+dataSets{setCount,1} = rawData(anchor:(row),(colLabel+1):end);%clip
+dataSets{setCount,1} = transpose(dataSets{setCount,1});%transpose
 labels{setCount,1} = label.old;
 
 end 
