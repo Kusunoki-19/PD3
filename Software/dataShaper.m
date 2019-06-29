@@ -1,4 +1,5 @@
-%load('rawEEG.mat');
-rawData = testRawData
+load('Data\testRawData.mat');
+rawData =  testRawData
 
 [dataSets, labels] = clipDataSets(rawData)
+
