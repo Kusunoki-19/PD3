@@ -1,0 +1,1 @@
+[X, Y, ~, ~, ~] = recDir({}, {}, 1,"D:\_PD3\system\Software\Data\EMG2018", @readCB, @demoCB);
