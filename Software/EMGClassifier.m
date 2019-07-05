@@ -23,7 +23,7 @@ end
 %%
 %データの表示
 figure
-index = [1,2,30,31];
+index = [1,2,60,61];
 ax = cell(2*4);
 for i = (1:4)
     ax{i} = subplot(2,4,i);
