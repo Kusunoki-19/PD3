@@ -1,17 +1,6 @@
 clear
 %%
-%PD3プロジェクトの全体のsystemディレクトリの取得
-
-curPath = split(pwd,'\'); %現在のディレクトリを'\'記号で分割し配列に代入
-systemPath = ""; %全体をまとめるsystemディレクトリ
-for i  = 1:length(curPath)
-    systemPath = strcat(systemPath, curPath(i));
-    systemPath = strcat(systemPath, '\');
-    if(curPath(i) == "system")
-        break;
-    end
-end
-dataPath = strcat(systemPath,"Data\");
+dataPath = strcat(pwd,"\Data\SaveTestFolder");
 %%
 %データのロード
 signals = {}; %cell配列
@@ -19,11 +8,13 @@ labels = {}; %データラベル配列
 
 XTrain = {}; %学習用データ x : インプットcell配列
 YTrain = {}; %学習用データ y : 正解catetorical配列
-dataPath = 'data\EMG2018\train';
-[signals, labels, ] = recDir(dataPath,{}, {}, 1);
-
+[signals, labels] = dataReader(dataPath);
+for i = 1:length(labels)
+    temp(i,1) = labels{i,1};
+    
+end
 %cell配列を学習データ用にcategorical配列に変換
-YTrain = categorical(labels); 
+YTrain = categorical(temp); 
 %EMGデータをFFTして学習用データに変換
 for i = 1 : size(signals,1)
     [XTrain{i,1}] = fftEMG(signals{i,1});
@@ -32,7 +23,7 @@ end
 %%
 %データの表示
 figure
-index = [1,75,135,175];
+index = [1,2,30,31];
 ax = cell(2*4);
 for i = (1:4)
     ax{i} = subplot(2,4,i);
@@ -69,7 +60,7 @@ layers = [ ...
     fullyConnectedLayer(2^6)
     bilstmLayer(2^6,'OutputMode','last')
     fullyConnectedLayer(2^7)
-    fullyConnectedLayer(4)
+    fullyConnectedLayer(2)
     
     softmaxLayer
     classificationLayer]
