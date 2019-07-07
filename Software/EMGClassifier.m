@@ -1,6 +1,5 @@
 clear
-%%
-dataPath = strcat(pwd,"\Data\SaveTestFolder");
+dataPath = strcat(pwd,"\Data\EMG2018");
 %%
 %データのロード
 signals = {}; %cell配列
@@ -8,14 +7,14 @@ labels = {}; %データラベル配列
 
 XTrain = {}; %学習用データ x : インプットcell配列
 YTrain = {}; %学習用データ y : 正解catetorical配列
+
+%データのロード
 [signals, labels] = dataReader(dataPath);
-for i = 1:length(labels)
-    temp(i,1) = labels{i,1};
-    
-end
 %cell配列を学習データ用にcategorical配列に変換
-YTrain = categorical(temp); 
+YTrain = cellListStrToCategorical(labels);
+
 %EMGデータをFFTして学習用データに変換
+dataDimention = size(signals{1,1},1);
 for i = 1 : size(signals,1)
     [XTrain{i,1}] = fftEMG(signals{i,1});
 end
@@ -79,43 +78,3 @@ options = trainingOptions('adam', ...
 net = trainNetwork(XTrain,YTrain,layers,options);
 
 save(strcat(dataPath,'Networks\EMGClassifierNet.mat'),'EMGClassifierNet');
-%%
-%与えられたpathのディレクトリを再帰的に探索→そこに格納されているファイルを読み込み
-function [X,Y,index] = recDir(path, X, Y, index)
-fprintf('\n----- %s -----\n',path);
-d = dir(path);
-
-for i = 1 : length(d)
-    if d(i).name == '.'
-        continue;
-    end
-    
-    if d(i).isdir == 0
-        fprintf('%s\t',d(i).name);
-        tempX = importdata(strcat(path,'\',d(i).name)); %データ型の違うものがあったのでその対策
-        if isstruct(tempX)
-            tempX = tempX.val;
-        end
-        X{index,1} = tempX;
-        
-        tempY = strsplit(path,'\');
-        tempY = tempY(end);
-        tempY = tempY{1,1};
-        Y{index,1} = tempY;
-        index = index + 1;
-    else
-        pathNext = strcat(path,'\', d(i).name);
-        [X,Y,index] = recDir(pathNext, X, Y, index);
-    end
-end
-end
-%%
-function [P1] = fftEMG(signalX)
-L = size(signalX,2);
-fftX = fft(signalX);
-P2 = abs(fftX/L); %信号の絶対値
-P1 = P2(1:cast((L/2)+1,'int8')); %両側スペクトルを片側スペクトルへ
-P1(2:end-1) = 2*P1(2:end-1); %振幅を2倍
-
-end
-%%

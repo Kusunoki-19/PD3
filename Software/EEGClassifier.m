@@ -1,5 +1,5 @@
 clear
-dataPath = strcat(pwd,"\Data");
+dataPath = strcat(pwd,"\Data\EMG2018");
 %%
 %データのロード
 signals = {}; %cell配列
@@ -8,21 +8,15 @@ labels = {}; %データラベル配列
 XTrain = {}; %学習用データ x : インプットcell配列
 YTrain = {}; %学習用データ y : 正解catetorical配列
 
-[signals, labels] = dataReader(strcat(dataPath,"\EMG2018\train"));
+%データのロード
+[signals, labels] = dataReader(dataPath);
 %cell配列を学習データ用にcategorical配列に変換
-for i = 1:length(labels)
-    %str <-- cell list str
-    temp = labels{i,1}(1,1); 
-    %cell str <-- str
-    temp = cellstr(temp);
-    %cell str <-- cell str 同格のデータ形式で保存しないと cell list strになってしまう
-    labels{i,1}  = temp{1,1};
-end
+YTrain = cellListStrToCategorical(labels);
 
-YTrain = categorical(labels); 
 %EMGデータをFFTして学習用データに変換
+dataDimention = size(signals{1,1},1);
 for i = 1 : size(signals,1)
-    [XTrain{i,1}] = fftEMG(signals{i,1});
+    [XTrain{i,1}, dataDimention] = signalConverter(signals{i,1} , dataDimention);
 end
 
 %%
@@ -55,7 +49,6 @@ end
 %legend('Dorsal','Grip','Relax','Ulnar')
 
 %%
-dataDimention = 1;
 inputSize = dataDimention;
 numClasses = 4;
 
@@ -83,15 +76,4 @@ options = trainingOptions('adam', ...
     'Plots','training-progress');
 EEGClassifierNet = trainNetwork(XTrain,YTrain,layers,options);
 
-save(strcat(dataPath,'Networks\EEGClassifierNet.mat'),'EEGClassifierNet');
-
-%%
-function [P1] = fftEMG(signalX)
-L = size(signalX,2);
-fftX = fft(signalX);
-P2 = abs(fftX/L); %信号の絶対値
-P1 = P2(1:cast((L/2)+1,'int8')); %両側スペクトルを片側スペクトルへ
-P1(2:end-1) = 2*P1(2:end-1); %振幅を2倍
-
-end
-%%
+save(strcat(dataPath,'\Networks\EEGClassifierNet.mat'),'EEGClassifierNet');
