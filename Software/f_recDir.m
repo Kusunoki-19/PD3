@@ -1,4 +1,4 @@
-function [X, Y, index, dirs, fileCB, folderCB] = recDir(X, Y, index, dirs, fileCB, folderCB)
+function [X, Y, index, dirs, fileCB, folderCB] = f_recDir(X, Y, index, dirs, fileCB, folderCB)
 %RECDIR 与えられたpathのディレクトリを再帰的に探索
 %   与えられたfolderとdirのコールバック関数をそれぞれ実行
 curPath = "";
@@ -22,7 +22,7 @@ for i = 1 : length(d)
         [X, Y] = folderCB(X, Y, folderName, dirs);
         
         dirs(end+1) = folderName; %forward to child directory
-        [X, Y, index, dirs, ~, ~] = recDir(X, Y, index, dirs, fileCB, folderCB);
+        [X, Y, index, dirs, ~, ~] = f_recDir(X, Y, index, dirs, fileCB, folderCB);
     end
 end
 dirs = dirs(1:end-1); %back to parent directory

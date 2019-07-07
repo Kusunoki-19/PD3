@@ -1,10 +1,10 @@
-%load('Data\testRawData.mat');
-%rawData =  testRawData
-rawData = out.rawEMG1
+load('Data\testRawData.mat');
+rawData =  testRawData
+%rawData = out.rawEMG1
 
-[dataSets, labels] = clipDataSets(rawData)
+[dataSets, labels] = f_clipDataSets(rawData)
 dataPath = strcat( pwd, "\Data\EMG2019");
-[~ , dirTree ] = getDirTree(dataPath, struct);
+[~ , dirTree ] = f_getDirTree(dataPath, struct);
 %数字だけだと構造体のkeyとして認識されないなど不具合も多いので、'1' --> 'c1'のように変換する
 for i = 1:length(labels) 
     labels{i,1} = num2str(labels{i,1});
@@ -15,7 +15,7 @@ for i = 1:length(labels)
     dataSet = dataSets{i,1};
     temp = labels(i)
     temp = temp{1,1}
-    [~ , dirTree ] = getDirTree(dataPath, struct);
+    [~ , dirTree ] = f_getDirTree(dataPath, struct);
     saver(dataSet, temp,  dataPath, dirTree);
 end
 

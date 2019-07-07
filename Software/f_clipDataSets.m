@@ -1,4 +1,4 @@
-function [dataSets,labels] = clipDataSets(rawData)
+function [dataSets,labels] = f_clipDataSets(rawData)
 %CLIPDATASETS clip data sets 
 %   clip from raw EEG/EMG data recorded by simulink
 label.old = -1;

@@ -1,4 +1,4 @@
-function [dirs, dirTree] = getDirTree(dirs, dirTree)
+function [dirs, dirTree] = f_getDirTree(dirs, dirTree)
 %getDirTree 与えられたpathのディレクトリを再帰的に探索
 %   与えられたfolderのfolderとfileツリーを取得
 curPath = "";
@@ -27,7 +27,7 @@ for i = 1 : length(d)
         folderName = d(i).name;
         
         dirs(end+1) = folderName; %forward to child directory
-        [dirs ,childDir] = getDirTree(dirs,{}); %get child directory
+        [dirs ,childDir] = f_getDirTree(dirs,{}); %get child directory
         
         dirTree = setfield(dirTree, folderName, childDir);
     end

@@ -1,4 +1,4 @@
-function [categoricalData] = cellListStrToCategorical(cellListStr)
+function [categoricalData] = f_cellListStrToCategorical(cellListStr)
 %CELLLISTSTRINGTOCATEGORICAL この関数の概要をここに記述
 %   詳細説明をここに記述
 for i = 1:length(cellListStr)

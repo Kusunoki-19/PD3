@@ -1,4 +1,4 @@
-function [signal, dimention] = signalConverter(signal,dimention)
+function [signal, dimention] = f_signalConverter(signal,dimention)
 %SIGNALCONVERTER Classiferプログラム用の前処理プログラム
 %   low pass, high pass, stft
 signal = limitBand(signal);

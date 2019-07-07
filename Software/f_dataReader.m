@@ -1,5 +1,5 @@
-function [X,Y] = dataReader(dataPath) 
-[X, Y, ~, ~, ~] = recDir({}, {}, 1,dataPath, @readCB, @demoCB);
+function [X,Y] = f_dataReader(dataPath) 
+[X, Y, ~, ~, ~] = f_recDir({}, {}, 1,dataPath, @readCB, @demoCB);
 end
 
 function [X, Y] = readCB(X, Y, fileName, dirs)
