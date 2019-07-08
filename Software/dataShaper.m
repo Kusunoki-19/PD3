@@ -1,7 +1,7 @@
-load('Data\testRawData.mat');
-rawData =  testRawData
-%rawData = out.rawEMG1
+%load('Data\testRawData.mat');
+%rawData =  testRawData
 
+rawData = out.rawEMG1
 [dataSets, labels] = f_clipDataSets(rawData)
 dataPath = strcat( pwd, "\Data\EMG2019");
 [~ , dirTree ] = f_getDirTree(dataPath, struct);

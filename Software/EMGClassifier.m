@@ -1,5 +1,5 @@
 clear
-dataPath = strcat(pwd,"\Data\EMG2018");
+dataPath = strcat(pwd,"\Data\EMG2019");
 %%
 %データのロード
 signals = {}; %cell配列
@@ -9,7 +9,7 @@ XTrain = {}; %学習用データ x : インプットcell配列
 YTrain = {}; %学習用データ y : 正解catetorical配列
 
 %データのロード
-[signals, labels] = dataReader(dataPath);
+[signals, labels] = f_dataReader(dataPath);
 %cell配列を学習データ用にcategorical配列に変換
 YTrain = f_cellListStrToCategorical(labels);
 
@@ -21,6 +21,7 @@ end
 
 %%
 %データの表示
+%{
 figure
 index = [1,2,60,61];
 ax = cell(2*4);
@@ -47,11 +48,10 @@ for i = (1:4)
     title(ax{4+i},labels{index(i)});
 end
 %legend('Dorsal','Grip','Relax','Ulnar')
-
+%}
 %%
-dataDimention = 1;
 inputSize = dataDimention;
-numClasses = 4;
+numClasses = 2;
 
 layers = [ ...
     sequenceInputLayer(inputSize)
@@ -75,6 +75,6 @@ options = trainingOptions('adam', ...
     'Shuffle','once', ...
     'Verbose',0, ...
     'Plots','training-progress');
-net = trainNetwork(XTrain,YTrain,layers,options);
+EMGClassifierNet = trainNetwork(XTrain,YTrain,layers,options);
 
-save(strcat(dataPath,'Networks\EMGClassifierNet.mat'),'EMGClassifierNet');
+save(strcat(pwd,'\Data\Networks\EMGClassifierNet.mat'),'EMGClassifierNet');
