@@ -1,4 +1,4 @@
-classdef EEGNet < matlab.System
+classdef NetEEG < matlab.System
     % Untitled4 Add summary here
     %
     % This template includes the minimum set of functions required

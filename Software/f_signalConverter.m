@@ -1,5 +1,8 @@
 function [signal, dimention] = f_signalConverter(signal,dimention)
 %SIGNALCONVERTER Classiferプログラム用の前処理プログラム
+%   signal, double cell
+%   dimention , データ次元数
+
 %   low pass, high pass, stft
 signal = limitBand(signal);
 [signal, dimention] = stftSignal(signal, dimention);

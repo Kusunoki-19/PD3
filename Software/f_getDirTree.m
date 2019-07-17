@@ -1,6 +1,7 @@
 function [dirs, dirTree] = f_getDirTree(dirs, dirTree)
 %getDirTree 与えられたpathのディレクトリを再帰的に探索
-%   与えられたfolderのfolderとfileツリーを取得
+%   dirs , string リスト , ディレクトリリスト
+%   dirTree , 構造体 , ディレクトリ構造体の情報
 curPath = "";
 for i = 1 : length(dirs) %list --> str
     curPath = strcat(curPath, dirs(i), '\');

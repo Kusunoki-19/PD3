@@ -1,11 +1,11 @@
 clear
-dataPath = strcat(pwd,"\Data\EEG2018");
+dataPath = strcat(pwd,"\Data\TEST2019");
 %%
 %データのロード
 [XTrain, YTrain, XDim] = dataLoader(dataPath);
 %%
 inputSize = dataDimention;
-numClasses = 3;
+numClasses = 2;
 
 layers = [ ...
     sequenceInputLayer(inputSize)
@@ -13,7 +13,7 @@ layers = [ ...
     fullyConnectedLayer(2^6)
     bilstmLayer(2^6,'OutputMode','last')
     fullyConnectedLayer(2^7)
-    fullyConnectedLayer(4)
+    fullyConnectedLayer(2)
     
     softmaxLayer
     classificationLayer]
@@ -29,6 +29,6 @@ options = trainingOptions('adam', ...
     'Shuffle','once', ...
     'Verbose',0, ...
     'Plots','training-progress');
-EEGClassifierNet = trainNetwork(XTrain,YTrain,layers,options);
+TESTClassifierNet = trainNetwork(XTrain,YTrain,layers,options);
 
-save(strcat(dataPath,'\Networks\EEGClassifierNet.mat'),'EEGClassifierNet');
+save(strcat(pwd,'\Data\Networks\TESTClassifierNet.mat'),'TESTClassifierNet');

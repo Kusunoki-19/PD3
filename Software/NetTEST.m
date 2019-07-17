@@ -1,4 +1,4 @@
-classdef NetEMG < matlab.System
+classdef NetTEST < matlab.System
     % Untitled4 Add summary here
     %
     % This template includes the minimum set of functions required
@@ -22,7 +22,7 @@ classdef NetEMG < matlab.System
     methods(Access = protected)
         function setupImpl(obj)
             % Perform one-time calculations, such as computing constants
-            load('Data\Networks\EMGClassifier.mat');
+            load('Data\Networks\TESTClassifier.mat');
             obj.net = EMGClassifier;
         end
 

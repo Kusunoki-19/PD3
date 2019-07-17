@@ -1,6 +1,6 @@
 function [categoricalData] = f_cellListStrToCategorical(cellListStr)
 %CELLLISTSTRINGTOCATEGORICAL cell,list,stringデータ→categoricalデータに変換
-%   cell,list,stringデータ→categoricalデータに変換
+%   cellListStr , cell,list,stringデータ
 for i = 1:length(cellListStr)
     %str <-- cell list str
     temp = cellListStr{i,1}(1,1); 
