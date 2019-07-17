@@ -2,6 +2,9 @@ clear
 dataPath = strcat(pwd,"\Data\EMG2019");
 %%
 %データのロード
+dataPath = strcat(pwd,"\Data\EMG2019");
+%%
+%データのロード
 signals = {}; %cell配列
 labels = {}; %データラベル配列
 
@@ -19,6 +22,8 @@ for i = 1 : size(signals,1)
     [XTrain{i,1}, dataDimention] = f_signalConverter(signals{i,1} , dataDimention);
 end
 
+[XTrain, YTrain, XDim] = dataLoader("\Data\EMG2019");
+%%
 inputSize = dataDimention;
 numClasses = 2;
 

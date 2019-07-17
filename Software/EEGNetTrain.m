@@ -2,6 +2,9 @@ clear
 dataPath = strcat(pwd,"\Data\EMG2018");
 %%
 %データのロード
+dataPath = strcat(pwd,"\Data\EMG2019");
+%%
+%データのロード
 signals = {}; %cell配列
 labels = {}; %データラベル配列
 
@@ -18,39 +21,9 @@ dataDimention = size(signals{1,1},1);
 for i = 1 : size(signals,1)
     [XTrain{i,1}, dataDimention] = f_signalConverter(signals{i,1} , dataDimention);
 end
-
-%%
-%データの表示
-figure
-index = [1,75,135,175];
-ax = cell(2*4);
-for i = (1:4)
-    ax{i} = subplot(2,4,i);
-    for j = (0:4)
-        if j == 0 
-            hold on
-        end
-        plot(ax{i},signals{index(i)+j,1});
-    end
-    
-    xlabel(ax{i},"Time Step");
-    title(ax{i},labels{index(i)});
-    
-    ax{4+i} = subplot(2,4,4+i);
-    for j = (0:10)
-        if j == 0
-            hold on
-        end
-        plot(ax{4+i},XTrain{index(i)+j,1});
-    end
-    xlabel(ax{4+i},"Frequency");
-    title(ax{4+i},labels{index(i)});
-end
-%legend('Dorsal','Grip','Relax','Ulnar')
-
 %%
 inputSize = dataDimention;
-numClasses = 4;
+numClasses = 3;
 
 layers = [ ...
     sequenceInputLayer(inputSize)
