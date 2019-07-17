@@ -1,4 +1,4 @@
-function [X,Y] = f_dataReader(dataPath) 
+function [X,Y] = f_loadDataSets(dataPath) 
 [X, Y, ~, ~, ~] = f_recDir({}, {}, 1,dataPath, @readCB, @demoCB);
 end
 
