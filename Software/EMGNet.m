@@ -1,4 +1,4 @@
-classdef net_EMGClassify < matlab.System
+classdef EMGNet < matlab.System
     % Untitled4 Add summary here
     %
     % This template includes the minimum set of functions required
@@ -7,7 +7,7 @@ classdef net_EMGClassify < matlab.System
     % Public, tunable properties
     properties
         net
-
+    
     end
 
     properties(DiscreteState)
