@@ -2,7 +2,7 @@ clear
 dataPath = strcat(pwd,"\Data\EEG2018");
 %%
 %データのロード
-[XTrain, YTrain, XDim] = dataLoader(dataPath);
+[XTrain, YTrain, XDim] = f_dataLoader(dataPath);
 %%
 inputSize = dataDimention;
 numClasses = 3;

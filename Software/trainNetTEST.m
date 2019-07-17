@@ -1,10 +1,10 @@
 clear
-dataPath = strcat(pwd,"\Data\TEST2019");
+dataPath = strcat(pwd,"\Data\TEST");
 %%
 %データのロード
-[XTrain, YTrain, XDim] = dataLoader(dataPath);
+[XTrain, YTrain, XDim] = f_dataLoader(dataPath);
 %%
-inputSize = dataDimention;
+inputSize = XDim;
 numClasses = 2;
 
 layers = [ ...

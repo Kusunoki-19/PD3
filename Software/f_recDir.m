@@ -1,4 +1,4 @@
-function [X, Y, dirs, fileCB, folderCB] = f_recDir(X, Y, dirs, fileCB, folderCB)
+function [X, Y, index, dirs, fileCB, folderCB] = f_recDir(X, Y, index, dirs, fileCB, folderCB)
 %RECDIR 与えられたpathのディレクトリを再帰的に探索
 %   X , cellリスト , データ本体の情報
 %   Y , cellリスト , データのラベル情報

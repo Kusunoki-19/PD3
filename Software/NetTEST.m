@@ -6,12 +6,10 @@ classdef NetTEST < matlab.System
 
     % Public, tunable properties
     properties
-        net
     
     end
 
     properties(DiscreteState)
-
     end
 
     % Pre-computed constants
@@ -22,8 +20,11 @@ classdef NetTEST < matlab.System
     methods(Access = protected)
         function setupImpl(obj)
             % Perform one-time calculations, such as computing constants
-            load('Data\Networks\TESTClassifier.mat');
-            obj.net = EMGClassifier;
+            
+            %load('Data\Networks\TESTClassifier.mat');
+            %obj.net = EMGClassifier;
+            %temp = load("D:\kusunoki\PD3\Software\Data\Networks\TESTClassifierNet.mat");
+            %obj.net = TESTClassifierNet;
         end
 
         function y = stepImpl(obj,u)
@@ -34,6 +35,8 @@ classdef NetTEST < matlab.System
 
         function resetImpl(obj)
             % Initialize / reset discrete-state properties
+            temp = load("D:\kusunoki\PD3\Software\Data\Networks\TESTClassifierNet.mat");
+            net = temp;
         end
     end
 end

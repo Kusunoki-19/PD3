@@ -2,10 +2,11 @@
 %rawData =  testRawData
 %dataPath = strcat( pwd, "\Data\EMG2019");
 
-function edit_saveRawData(savePath)
+function edit_saveRawData(savePath , rawData)
 %EDIT_SAVERAWDATA rawDataをdataSetsとして編集後保存
 % savePath , string , データ保存ディレクトリのフルパス
-rawData = out.rawTEST
+
+%rawData = out.rawTEST
 [dataSets, labels] = f_clipDataSets(rawData)
 [~ , dirTree ] = f_getDirTree(savePath, struct);
 %数字だけだと構造体のkeyとして認識されないなど不具合も多いので、'1' --> 'c1'のように変換する
