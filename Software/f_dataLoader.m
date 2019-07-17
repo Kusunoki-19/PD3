@@ -1,5 +1,4 @@
 function[XTrain, YTrain, XDim] = f_dataLoader(dataPath)
-dataPath = strcat(pwd,dataPath);
 %%
 %データのロード
 signals = {}; %cell配列
