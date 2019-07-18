@@ -19,8 +19,8 @@ public class ObjectDisplayControl : MonoBehaviour
     GameObject ball;
     GameObject stick;
 
-
     private Animator animator;
+
 
 	// Use this for initialization
 	void Start () {
@@ -30,11 +30,7 @@ public class ObjectDisplayControl : MonoBehaviour
         sender = new UdpClient();
         sender.Connect(SEND_HOST, SEND_PORT);
 
-        //object initialize. fetch object, and display none
-        ball = GameObject.Find("Sphere");
-        stick = GameObject.Find("Cylinder");
-        ball.SetActive(false);
-        stick.SetActive(false);
+        animator = GetComponent<Animator>();
 	}
 	
 	// Update is called once per frame
@@ -48,16 +44,19 @@ public class ObjectDisplayControl : MonoBehaviour
         switch (data[0])
         {
             case 1:
-                ball.SetActive(true);
-                stick.SetActive(false);
+                animator.SetBool("Gripping", true);
+                animator.SetBool("Picking", false);
+                animator.SetBool("Relaxing", false);
                 break;
             case 2:
-                ball.SetActive(false);
-                stick.SetActive(true);
+                animator.SetBool("Gripping", false);
+                animator.SetBool("Picking", true);
+                animator.SetBool("Relaxing", false);
                 break;
             default:
-                ball.SetActive(false);
-                stick.SetActive(false);
+                animator.SetBool("Gripping", false);
+                animator.SetBool("Picking", false);
+                animator.SetBool("Relaxing", true);
                 break;
         }
         sender.Send(data, data.Length);
