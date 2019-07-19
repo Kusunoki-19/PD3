@@ -6,7 +6,7 @@ classdef NetTEST < matlab.System
 
     % Public, tunable properties
     properties
-    
+        net = load("D:\kusunoki\PD3\Software\Data\Networks\TESTClassifierNet.mat");
     end
 
     properties(DiscreteState)
@@ -30,13 +30,13 @@ classdef NetTEST < matlab.System
         function y = stepImpl(obj,u)
             % Implement algorithm. Calculate y as a function of input u and
             % discrete states.
-            y = predict(obj.net, u);
+            y = classify(obj.net, u);
         end
 
         function resetImpl(obj)
             % Initialize / reset discrete-state properties
-            temp = load("D:\kusunoki\PD3\Software\Data\Networks\TESTClassifierNet.mat");
-            net = temp;
+            %temp = load("D:\kusunoki\PD3\Software\Data\Networks\TESTClassifierNet.mat");
+            %obj.net = temp;
         end
     end
 end
