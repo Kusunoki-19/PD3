@@ -22,8 +22,6 @@ classdef NetEMG < matlab.System
     methods(Access = protected)
         function setupImpl(obj)
             % Perform one-time calculations, such as computing constants
-            load('Data\Networks\EMGClassifier.mat');
-            obj.net = EMGClassifier;
         end
 
         function y = stepImpl(obj,u)
@@ -34,6 +32,7 @@ classdef NetEMG < matlab.System
 
         function resetImpl(obj)
             % Initialize / reset discrete-state properties
+            obj.net = EMGClassifier;
         end
     end
 end

@@ -8,7 +8,7 @@ inputSize = XDim;
 numClasses = 2;
 
 layers = [ ...
-    sequenceInputLayer(inputSize)
+    imageInputLayer([128 109])
     fullyConnectedLayer(2^11)
     fullyConnectedLayer(2^6)
     bilstmLayer(2^6,'OutputMode','last')
