@@ -6,7 +6,7 @@ classdef NetTEST < matlab.System
 
     % Public, tunable properties
     properties
-        net = load("D:\kusunoki\PD3\Software\Data\Networks\TESTClassifierNet.mat");
+       
     end
 
     properties(DiscreteState)
@@ -14,29 +14,46 @@ classdef NetTEST < matlab.System
 
     % Pre-computed constants
     properties(Access = private)
-
+        net SeriesNetwork;
+%        TESTClassifierNet;
     end
 
     methods(Access = protected)
         function setupImpl(obj)
-            % Perform one-time calculations, such as computing constants
-            
-            %load('Data\Networks\TESTClassifier.mat');
-            %obj.net = EMGClassifier;
-            %temp = load("D:\kusunoki\PD3\Software\Data\Networks\TESTClassifierNet.mat");
-            %obj.net = TESTClassifierNet;
+             %Perform one-time calculations, such as computing constants
+             
+%             temp = load("D:\kusunoki\PD3\Software\Data\Networks\TESTClassifierNet.mat");
+%             obj.net = temp.TESTClassifierNet;
+%             obj.net = evalin('base', 'TESTClassifierNet');
+             coder.extrinsic('Simulink.ModelWorkspace')
+             obj.net = Simulink.ModelWorkspace.getVariable('ModelWorkspace', 'TESTClassifierNet');
         end
 
         function y = stepImpl(obj,u)
             % Implement algorithm. Calculate y as a function of input u and
             % discrete states.
-            y = classify(obj.net, u);
+            switch (classify(obj.net, u))
+                case 'c0'
+                    y = 0;
+                case 'c1'
+                    y = 1;
+                otherwise
+                    y = 0;
+            end
+            y=1;
         end
-
+        function dataout = getOutputDataTypeImpl(~)
+         dataout = 'double';
+        end
+        function sizeout = getOutputSizeImpl(~)
+         sizeout = [1 1];
+        end
         function resetImpl(obj)
             % Initialize / reset discrete-state properties
             %temp = load("D:\kusunoki\PD3\Software\Data\Networks\TESTClassifierNet.mat");
             %obj.net = temp;
+            
         end
+        
     end
 end
