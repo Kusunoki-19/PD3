@@ -19,6 +19,14 @@ classdef NetTEST < matlab.System
     end
 
     methods(Access = protected)
+        function dataout = getOutputDataTypeImpl(~)
+         dataout = 'double';
+        end
+        
+        function sizeout = getOutputSizeImpl(~)
+         sizeout = [1 1];
+        end
+        
         function setupImpl(obj)
              %Perform one-time calculations, such as computing constants
              
@@ -42,17 +50,8 @@ classdef NetTEST < matlab.System
             end
             y=1;
         end
-        function dataout = getOutputDataTypeImpl(~)
-         dataout = 'double';
-        end
-        function sizeout = getOutputSizeImpl(~)
-         sizeout = [1 1];
-        end
         function resetImpl(obj)
             % Initialize / reset discrete-state properties
-            %temp = load("D:\kusunoki\PD3\Software\Data\Networks\TESTClassifierNet.mat");
-            %obj.net = temp;
-            
         end
         
     end
