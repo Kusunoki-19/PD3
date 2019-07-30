@@ -47,9 +47,12 @@ t1-d3 t2-d3 t3-d3 ... tT-d3
 ...   ...   ...   ... ...
 t1-dD t2-dD t3-dD ... tT-dD 
 
-t1-d1 : (fft converted data)
+tN-dM : (fft converted data)
 vertical : freqency
 hroizen  : time
+
+hozcat (t1-d1, t2-d1)
+vertcat(t1-d1, t1-d1)
 
 t1 --> t2
 The difference between t1 to t2 means ones shift of window.
@@ -74,6 +77,7 @@ for curDim = 1:dimention
         
 
     end
+    
 
 end
 signal = stft(signal, fs);
