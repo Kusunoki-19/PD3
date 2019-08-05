@@ -75,10 +75,7 @@ for curDim = 1:dimention
         fftAbs = transpose(fftAbs);
         hozcat(spectrogram, fftAbs);
         
-
     end
-    
-
 end
 signal = stft(signal, fs);
 signal = abs(signal);
