@@ -100,7 +100,8 @@ classdef RingQ < handle
             deQLen = length(outdata);
             
             for i = 0:deQLen - 1
-                fprintf('Q[%d] : %d\n',obj.suffix(readA + i), outdata(1 + i));
+                fprintf('Q[%d] : %d\n', ...
+                    obj.suffix(readA + i), outdata(1 + i));
             end
         end
         
