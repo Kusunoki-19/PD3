@@ -1,6 +1,10 @@
 classdef RingQ < handle
     %RINGQ ring baffer
-    %   Ú×à–¾‚ð‚±‚±‚É‹Lq
+    %   enQ method
+    %   deQ method
+    %   readQ method
+    %   printQ method
+    %   printWaitingQ method
     
     properties 
         length
@@ -91,6 +95,7 @@ classdef RingQ < handle
         end
         
         function printQ(obj, readA, readB)
+            %PRINTQ print queue between readA to readB
             outdata = obj.readQ(readA, readB);
             deQLen = length(outdata);
             
@@ -100,6 +105,7 @@ classdef RingQ < handle
         end
         
         function printWaitingQ(obj)
+            %PRINTWAITINGQ print queue between head to (tail -1)
             obj.printQ(obj.head, obj.suffix(obj.tail - 1));
         end
         
