@@ -39,7 +39,7 @@ for i = 1:windowLen
 end
 end
 
-function [signal, dimention] = stftWithFft(signal, dimention) 
+function [spectrogram, dimention] = stftOriginal(signal, dimention) 
 fs = 2000;
 sigLen = size(signalX,2);
 
@@ -75,21 +75,21 @@ d1 means dimention 1.
 In this situation , dimention means chennel.
 %}
 spectrogram = [];
+spec_hoz = [];
 
 for curDim = 1:dimention 
     for i = 0:((sigLen - M) / R)
         b = M + (R * i);
         a = b - M + 1;
-
-        fftRaw = fft(signal(a:b,curDim));
+        cnvSignal = stftWindow(signal(a:b,curDim));
+        fftRaw = fft(cnvSignal);
         fftAbs = abs(fftRaw);
         fftAbs = transpose(fftAbs);
-        hozcat(spectrogram, fftAbs);
+        hozcat(spec_hoz, fftAbs);
     end
+    vercat(spectrogram, spec_hoz);
 end
-signal = stft(signal, fs);
-signal = abs(signal);
-dimention = size(signal, 1);
+dimention = size(spectrogram, 1);
 end
 
 function [P1] = fftEMG(signalX)
