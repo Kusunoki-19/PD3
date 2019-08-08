@@ -27,6 +27,18 @@ signal = abs(signal);
 dimention = size(signal, 1);
 end
 
+function signal = stftWindow(signal)
+windowLen = length(signal);
+
+for i = 1:windowLen
+    w = ((i - 1) / (windowLen - 1))*2;
+    if w > 1
+        w = 2 - w;
+    end
+    signal(i) = w * signal(i);
+end
+end
+
 function [signal, dimention] = stftWithFft(signal, dimention) 
 fs = 2000;
 sigLen = size(signalX,2);
@@ -65,7 +77,6 @@ In this situation , dimention means chennel.
 spectrogram = [];
 
 for curDim = 1:dimention 
-    
     for i = 0:((sigLen - M) / R)
         b = M + (R * i);
         a = b - M + 1;
@@ -74,7 +85,6 @@ for curDim = 1:dimention
         fftAbs = abs(fftRaw);
         fftAbs = transpose(fftAbs);
         hozcat(spectrogram, fftAbs);
-        
     end
 end
 signal = stft(signal, fs);
