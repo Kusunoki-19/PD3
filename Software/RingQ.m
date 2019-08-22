@@ -1,10 +1,12 @@
 classdef RingQ < handle
     %RINGQ ring baffer
-    %   enQ method
-    %   deQ method
-    %   readQ method
-    %   printQ method
-    %   printWaitingQ method
+    %   suffix          method
+    %   getWaitingQlen  method
+    %   enQ             method
+    %   deQ             method
+    %   readQ           method
+    %   printQ          method
+    %   printWaitingQ   method
     
     properties 
         length
@@ -26,9 +28,9 @@ classdef RingQ < handle
                 tail = 1;
             end
             %head must be not tail
-            if head == tail
-                tail = tail + 1;
-            end
+%            if head == tail
+%                tail = tail + 1;
+%            end
             
             obj.q = zeros(length,1);
             obj.length = length;
@@ -51,12 +53,20 @@ classdef RingQ < handle
             end
         end
         
+        function waitingQLen = getWaitingQLen(obj)
+            if obj.head > obj.tail
+                waitingQLen = obj.tail + obj.length - obj.head;
+            else 
+                waitingQLen = obj.tail - obj.head;
+            end
+        end
+        
         function enQ(obj,indata)
             %ENQ enqueue method
             %   indata : double list : enqueue data
             for i = 1:length(indata)
-                if obj.head == obj.tail + 1
-                    warning('warning : head == tail');
+                if obj.getWaitingQLen() + 1 == 8
+                    warning('next will be the case  of "head == tail"');
                     break;
                 end
                 obj.q(obj.tail) = indata(i);
@@ -70,8 +80,8 @@ classdef RingQ < handle
             oudata = zeros(deQLen);
             for i = 1:deQLen
                 %head‚©‚çŽæ‚èo‚µ‚ÄXV
-                if obj.head + 1 == obj.tail
-                    warning('warning : head == tail');
+                if obj.getWaitingQLen() - 1 == 0
+                    warning('next will be the case  of "head == tail"');
                     break;
                 end
                 outdata(i) = obj.q(obj.head);
@@ -110,6 +120,10 @@ classdef RingQ < handle
             obj.printQ(obj.head, obj.suffix(obj.tail - 1));
         end
         
+        function printAllQ(obj)
+            %PRINTALLQ print queue between 1 to QLength
+            obj.printQ(1, obj.length);
+        end
     end
 end
 
