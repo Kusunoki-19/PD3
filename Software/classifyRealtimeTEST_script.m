@@ -12,12 +12,13 @@ xlabel(ax{1},'time');
 ylabel(ax{1},'Frecency');
 
 
-Ts = 2; % [second]
-userData = struct;
+callbackInterval = 2;
 
+userData = struct;
+userData.duration = callbackInterval; %callback duration(ni device) [second]
 
 stream = timer;
-stream.Period = Ts; % sampling time
+stream.Period = callbackInterval; % calltack interval(timer)[second]
 stream.UserData = userData;
 stream.ExecutionMode = 'fixedRate';
 stream.StartFcn = @timerSetup;
@@ -53,6 +54,7 @@ fprintf('-----setup     -----%s\n',datestr(event.Data.time,'HH:MM:SS.FFF'));
 %fetch NI Device
 self.UserData.session = daq.createSession('ni');
 addAnalogInputChannel(self.UserData.session,'Dev1','ai0','Voltage');
+self.UserData.session.DurationInSeconds = self.UserData.duration;
 self.UserData.session.Rate = 2000;
 qLen = 2000 * 20;
 self.UserData.signalIn  = RingQ(qLen, qLen * (2/4), qLen * (4/4));
