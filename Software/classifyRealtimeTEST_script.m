@@ -1,27 +1,6 @@
-
 clear
-%sessionデータにいくらのデータが集まった状態でデータを返すか
-%という記述があるので、そのデータを用いてデータ長を決定する
-global GLOBAL_Fs;
-global GLOBAL_Ts;
-GLOBAL_Fs = 2000;
-GLOBAL_Ts = 1/GLOBAL_Fs;
-
-%fetch NI Device
-session = daq.createSession('ni');
-addAnalogInputChannel(session,'Dev1','ai0','Voltage');
-
-%set parameters
-session.IsContinuous = true;
-session.Rate = GLOBAL_Fs;
-
-global global_inputSignal;
-global global_outputSignal;
-global_inputSignal  = zeros(session.NotifyWhenDataAvailableExceeds,1);
-global_outputSignal = zeros(session.NotifyWhenDataAvailableExceeds,1);
 
 %plot area setting
-global ax;
 ax = cell(2);
 ax{1} = subplot(1,2,1);
 xlabel(ax{1},'time');
@@ -33,55 +12,88 @@ xlabel(ax{1},'time');
 ylabel(ax{1},'Frecency');
 
 
-%"output" stream
-%queueOutputData(session,[global_inputSignal]);
-%lh = addlistener(s,'DataAvailable'...
-%    ,@(src,event) src.queueOutputData(global_inputSignal));
+Ts = 2; % [second]
+userData = struct;
 
-%session start and end
-listenHandler = addlistener(session,'DataAvailable',@callbackDataAvailable);
-startBackground(session);
-delete (listenHandler);
-stop(session);
 
+stream = timer;
+stream.Period = Ts; % sampling time
+stream.UserData = userData;
+stream.ExecutionMode = 'fixedRate';
+stream.StartFcn = @timerSetup;
+stream.TimerFcn = @timerInterrupts;
+stream.StopFcn  = @timerFinish;
+stream.ErrorFcn = @timerError;
+stream.TasksToExecute = 5;
+
+start(stream);
+
+
+%%
 function label = refSignalLabel()
+%{
 label = classify(TESTNet, spectrogram);
+%}
 end
 
+%%
 function callbackDataAbailable2()
+%{
 cnvSignal = inputSignal.deQ(2000);
 spectrogram = f_signalzconverter(cnvSignal);
 label = refSignalLabel(spectrogram);
 labels = labels
 global_outpuSignal.enQ(labels);
+%}
 end
 
-function callbackDataAvailable(src,event)
-     %  CALLBACKDATAAVAILABLE called when session data available
-     % src , contains session infomation , struct
-     % src.NotifyWhenDataAvailableExceeds , data length , double
-     
-     % event , contains session data , struct
-     % event.data , data(input signal of NI Device) , 
-     %     double list (src.NotifyWhenDataAvailable)x(channel Len)
-     
-     %plot(ax{1},event.TimeStamps,event.Data);
-     plot(event.TimeStamps,event.Data);
-     
-     %{
-     persistent dataLen;
-     if isempty(dataLen)
-         dataLen = length(event.data,1);
-     end
-     
-     global_inputSignal.enQ(event.Data);  
-     
-     plot(event.TimeStamps,event.Data);
-     if waitingLen > convertLen
-        parfeval(callbackDataAvailable2)
-     end
-     
-     labels = global_outputSignal.deQ(dataLen)
-     %}
-     
+%%
+function timerSetup(self, event)
+fprintf('-----setup     -----%s\n',datestr(event.Data.time,'HH:MM:SS.FFF'));
+%fetch NI Device
+self.UserData.session = daq.createSession('ni');
+addAnalogInputChannel(self.UserData.session,'Dev1','ai0','Voltage');
+self.UserData.session.Rate = 2000;
+qLen = 2000 * 20;
+self.UserData.signalIn  = RingQ(qLen, qLen * (2/4), qLen * (4/4));
+self.UserData.signalOut = RingQ(qLen, qLen * (1/4), qLen * (3/4));
+
+self.UserData.data = '';
+self.UserData.running = 1;
 end
+
+%%
+function timerInterrupts(self, event)
+fprintf('-----interrupts-----%s\n',datestr(event.Data.time,'HH:MM:SS.FFF'));
+%data acquisition
+[signal,timeStamps,~] = startForeground(self.UserData.session);
+
+%enQ
+%stream.UserData.signalIn.enQ(signal);  
+
+%plot
+%plot(stream.UserData.signalIn.readQ(1,20000));
+plot(timeStamps,signal);
+
+%{
+if waitingLen > convertLen
+    callbackDataAvailable2(stream)
+end
+
+labels = stream.UserData.signalOut.deQ(dataLen)
+%}
+end
+
+%%
+function timerFinish(self, event)
+fprintf('-----finish    -----%s\n',datestr(event.Data.time,'HH:MM:SS.FFF'));
+self.UserData.running = 0;
+delete(self);
+end
+
+%%
+function timerError(self, event)
+disp('-----error-----');
+delete(self);
+end
+%%
