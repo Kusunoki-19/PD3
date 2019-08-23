@@ -21,10 +21,10 @@ classdef RingQ < handle
             %   initialize ringQ length, frotn and tail
             
             %data suffix must be between (1 ~ datalen)
-            if (head > 0) && (head < length)
+            if (head < 0) && (head > length)
                 head = 1;
             end
-            if (tail > 0) && (tail < length)
+            if (tail < 0) && (tail > length)
                 tail = 1;
             end
             %head must be not tail
@@ -65,7 +65,7 @@ classdef RingQ < handle
             %ENQ enqueue method
             %   indata : double list : enqueue data
             for i = 1:length(indata)
-                if obj.getWaitingQLen() + 1 == 8
+                if obj.getWaitingQLen() + 1 == obj.length
                     warning('next will be the case  of "head == tail"');
                     break;
                 end
@@ -98,10 +98,14 @@ classdef RingQ < handle
             end
             deQLen = readB - readA + 1;
             
-            outdata = zeros(deQLen);         
+            outdata = zeros(deQLen,1);         
             for i = 0:deQLen - 1
                 outdata(1 + i) = obj.q(obj.suffix(readA + i));
             end
+        end
+        
+        function outdata = readAllQ(obj)
+            outdata = obj.readQ(1,obj.length);
         end
         
         function printQ(obj, readA, readB)

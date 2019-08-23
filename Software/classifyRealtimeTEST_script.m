@@ -1,87 +1,155 @@
-
 clear
-%sessionデータにいくらのデータが集まった状態でデータを返すか
-%という記述があるので、そのデータを用いてデータ長を決定する
-global GLOBAL_Fs;
-global GLOBAL_Ts;
-GLOBAL_Fs = 2000;
-GLOBAL_Ts = 1/GLOBAL_Fs;
 
-%fetch NI Device
-session = daq.createSession('ni');
-addAnalogInputChannel(session,'Dev1','ai0','Voltage');
+callbackInterval = 1;
+executeTime = 11;
 
-%set parameters
-session.IsContinuous = true;
-session.Rate = GLOBAL_Fs;
+userData = struct;
+userData.duration = callbackInterval; %callback duration(ni device) [second]
 
-global global_inputSignal;
-global global_outputSignal;
-global_inputSignal  = zeros(session.NotifyWhenDataAvailableExceeds,1);
-global_outputSignal = zeros(session.NotifyWhenDataAvailableExceeds,1);
+stream = timer; % timer class construct
+stream.Period = callbackInterval; % calltack interval(timer)[second]
+stream.UserData = userData;
+stream.ExecutionMode = 'fixedRate';
+stream.StartFcn = @timerSetup;
+stream.TimerFcn = @timerInterrupts;
+stream.StopFcn  = @timerFinish;
+stream.ErrorFcn = @timerError;
+stream.TasksToExecute = round(executeTime / callbackInterval);
 
-%plot area setting
-global ax;
-ax = cell(2);
-ax{1} = subplot(1,2,1);
-xlabel(ax{1},'time');
-ylabel(ax{1},'Voltage');
-ax{1}.XLim = [0 10];
-
-ax{2} = subplot(1,2,2);
-xlabel(ax{1},'time');
-ylabel(ax{1},'Frecency');
+start(stream);
 
 
-%"output" stream
-%queueOutputData(session,[global_inputSignal]);
-%lh = addlistener(s,'DataAvailable'...
-%    ,@(src,event) src.queueOutputData(global_inputSignal));
-
-%session start and end
-listenHandler = addlistener(session,'DataAvailable',@callbackDataAvailable);
-startBackground(session);
-delete (listenHandler);
-stop(session);
-
-function label = refSignalLabel()
-label = classify(TESTNet, spectrogram);
+%%
+function label = refSignalLabel(spect)
+%label = classify(TESTNet, spectrogram);
+label = 0;
 end
 
-function callbackDataAbailable2()
-cnvSignal = inputSignal.deQ(2000);
-spectrogram = f_signalzconverter(cnvSignal);
+%%
+function spect =  callbackDataAbailable2(cnvtData)
+disp('callbackDataAbailable2')
+spect = f_signalConverter(cnvtData,1);
+%{
 label = refSignalLabel(spectrogram);
 labels = labels
 global_outpuSignal.enQ(labels);
+%}
 end
 
-function callbackDataAvailable(src,event)
-     %  CALLBACKDATAAVAILABLE called when session data available
-     % src , contains session infomation , struct
-     % src.NotifyWhenDataAvailableExceeds , data length , double
-     
-     % event , contains session data , struct
-     % event.data , data(input signal of NI Device) , 
-     %     double list (src.NotifyWhenDataAvailable)x(channel Len)
-     
-     %plot(ax{1},event.TimeStamps,event.Data);
-     plot(event.TimeStamps,event.Data);
-     
-     %{
-     persistent dataLen;
-     if isempty(dataLen)
-         dataLen = length(event.data,1);
-     end
-     
-     global_inputSignal.enQ(event.Data);  
-     
-     plot(event.TimeStamps,event.Data);
-     if waitingLen > convertLen
-        parfeval(callbackDataAvailable2)
-     end
-     
-     labels = global_outputSignal.deQ(dataLen)
-     %}
-     
+%%
+function timerSetup(self, event)
+fprintf('-----setup     -----\n');
+%fetch NI Device
+session = daq.createSession('ni');
+addAnalogInputChannel(session,'Dev1','ai0','Voltage');
+%session setting
+session.DurationInSeconds = self.Period;
+session.Rate = 2000;
+
+
+%Ring Baffer setting
+inoutDataLen = session.Rate * session.DurationInSeconds;
+
+cnvtLen = inoutDataLen * 1;
+
+margin.catchup = inoutDataLen;
+margin.convert = 0;
+
+outQ.head = 1;
+outQ.tail = 1 + margin.convert + inoutDataLen;
+
+inQ.head = outQ.tail ;
+inQ.tail = inQ.head + cnvtLen + margin.convert;
+
+qLen = ...
+    inoutDataLen +...
+    margin.catchup +...
+    cnvtLen +...
+    margin.convert;
+
+%plot area setting
+ax = cell(2);
+ax1 = subplot(2,1,1);
+xlabel(ax1,'time');
+ylabel(ax1,'Voltage');
+ax2 = subplot(2,1,2);
+xlabel(ax2,'time');
+ylabel(ax2,'Lalbel');
+
+%set parameter into the timer object
+%session
+self.UserData.session = session;
+%plot
+self.UserData.p1 = plot(ax1, [0]); %pre plot
+self.UserData.p2 = plot(ax2, [0]); %pre plot
+axis([ax1 ax2],'manual');
+axis([ax1 ax2],[0 inf -3 3] * 0.05);
+self.UserData.ax1 = ax1;
+self.UserData.ax2 = ax2;
+%ring baffer
+self.UserData.signalIn  = RingQ(qLen, inQ.head , inQ.tail );
+self.UserData.signalOut = RingQ(qLen, outQ.head, outQ.tail);
+%convert
+self.UserData.cvntLen = cnvtLen;
+self.UserData.dataCount = 0;
+
+fprintf('session duration     \t: %d[s]\n',session.DurationInSeconds);
+fprintf('session rate         \t: %d[Hs]\n',session.Rate);
+fprintf('timer Period         \t: %d[s]\n',self.Period);
+fprintf('timer tasks to excute\t: %d\n',self.TasksToExecute);
+fprintf('queue length         \t: %d\n',qLen);
+fprintf('indata queue head    \t: %d\n',inQ.head);
+fprintf('indata queue tail    \t: %d\n',inQ.tail);
+fprintf('outdata queue head   \t: %d\n',outQ.head);
+fprintf('outdata queue tail   \t: %d\n',outQ.tail);
+
 end
+
+%%
+function timerInterrupts(self, event)
+fprintf('-----interrupts-----%s\n', ...
+    datestr(event.Data.time,'HH:MM:SS.FFF'));
+%data acquisition
+%[signal, time stamps, trigger time]
+[signal,~,~] = startForeground(self.UserData.session);
+
+%enQ
+%stream.UserData.signalIn.enQ(signal);  
+
+%plot
+self.UserData.signalIn.enQ(signal);
+self.UserData.dataCount = self.UserData.dataCount + length(signal);
+
+self.UserData.p1.YData = self.UserData.signalIn.readAllQ();
+self.UserData.p2.YData = self.UserData.signalOut.readAllQ();
+
+disp([...
+    self.UserData.signalIn.head ... %head
+    self.UserData.signalIn.tail ... %tail
+    self.UserData.signalIn.getWaitingQLen()... %waitingQlength
+    self.UserData.dataCount... %dataCount
+    ])
+
+if self.UserData.dataCount >= self.UserData.cvntLen
+    cvntData = self.UserData.signalIn.deQ(self.UserData.cvntLen);
+    spect = callbackDataAbailable2(cvntData);
+    label = refSignalLabel(spect);
+    self.UserData.dataCount = 0;
+end
+
+
+%labels = stream.UserData.signalOut.deQ(dataLen)
+end
+
+%%
+function timerFinish(self, event)
+fprintf('-----finish    -----\n');
+delete(self);
+end
+
+%%
+function timerError(self, event)
+fprintf('-----error     -----\n');
+delete(self);
+end
+%%
