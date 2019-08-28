@@ -92,6 +92,9 @@ self.UserData.signalOut = RingQ(qLen, outQ.head, outQ.tail);
 %convert
 self.UserData.cvntLen = cnvtLen;
 self.UserData.dataCount = 0;
+%Networks
+self.UserData.net.TEST = ...
+    load(strcat(pwd,'Data\Networks\TESTClassifierNet.mat'));
 
 fprintf('session duration     \t: %d[s]\n',session.DurationInSeconds);
 fprintf('session rate         \t: %d[Hs]\n',session.Rate);
