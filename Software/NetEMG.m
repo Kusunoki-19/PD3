@@ -1,4 +1,4 @@
-classdef net_EMGClassify < matlab.System
+classdef NetEMG < matlab.System
     % Untitled4 Add summary here
     %
     % This template includes the minimum set of functions required
@@ -7,7 +7,7 @@ classdef net_EMGClassify < matlab.System
     % Public, tunable properties
     properties
         net
-
+    
     end
 
     properties(DiscreteState)
@@ -22,8 +22,6 @@ classdef net_EMGClassify < matlab.System
     methods(Access = protected)
         function setupImpl(obj)
             % Perform one-time calculations, such as computing constants
-            load('Data\Networks\EMGClassifier.mat');
-            obj.net = EMGClassifier;
         end
 
         function y = stepImpl(obj,u)
@@ -34,6 +32,7 @@ classdef net_EMGClassify < matlab.System
 
         function resetImpl(obj)
             % Initialize / reset discrete-state properties
+            obj.net = EMGClassifier;
         end
     end
 end

@@ -1,6 +1,11 @@
 function [X, Y, index, dirs, fileCB, folderCB] = f_recDir(X, Y, index, dirs, fileCB, folderCB)
 %RECDIR 与えられたpathのディレクトリを再帰的に探索
-%   与えられたfolderとdirのコールバック関数をそれぞれ実行
+%   X , cellリスト , データ本体の情報
+%   Y , cellリスト , データのラベル情報
+%   dirs , string リスト , ディレクトリ情報の格納
+%   fileCB , callback関数アドレス , fileだったときに呼び出すコールバック関数
+%   folderCB , callback関数アドレス , folderだったときに呼び出すコールバック関数
+
 curPath = "";
 for i = 1 : length(dirs)
     curPath = strcat(curPath, dirs(i), '\');

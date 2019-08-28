@@ -1,5 +1,7 @@
-function [X,Y] = f_dataReader(dataPath) 
-[X, Y, ~, ~, ~] = f_recDir({}, {}, 1,dataPath, @readCB, @demoCB);
+function [X,Y] = f_loadDataSets(dataPath) 
+%F_LOADDATASETS 絶対パスで参照されるdataSetsのロードと格納
+%   dataPath , string , データの絶対パス
+[X, Y, ~, ~, ~, ~] = f_recDir({}, {}, 1, dataPath, @readCB, @demoCB);
 end
 
 function [X, Y] = readCB(X, Y, fileName, dirs)
