@@ -13,7 +13,7 @@ YTrain = {}; %学習用データ y : 正解catetorical配列
 [signals, labels] = f_loadDataSets(dataPath);
 
 %cell配列を学習データ用にcategorical配列に変換
-YTrain = f_cellListStrToCategorical(labels);
+YTrain = 	(labels);
 
 %EMGデータをFFTして学習用データに変換
 dataDimention = size(signals{1,1},1);
