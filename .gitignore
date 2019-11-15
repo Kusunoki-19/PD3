@@ -127,3 +127,8 @@ sysinfo.txt
 crashlytics-build.properties
 *.asv
 Software/slprj/
+Software/EEGObjectDisplayer/ObjectDisplayer/Library/
+Software/VirtualHand/VirtualHand/Library/
+box/
+*.autosave
+Software/VirtualHand/VirtualHand/Temp/
