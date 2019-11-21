@@ -9,8 +9,8 @@ numClasses = 3;
 
 layers = [ ...
     sequenceInputLayer(inputSize)
-    fullyConnectedLayer(2^11)
-    fullyConnectedLayer(2^6)
+    fullyConnectedLayer(2^12)
+    fullyConnectedLayer(2^12)
     bilstmLayer(2^6,'OutputMode','last')
     fullyConnectedLayer(2^7)
     fullyConnectedLayer(4)

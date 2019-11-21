@@ -8,16 +8,21 @@ inputSize = XDim;
 numClasses = 2;
 
 layers = [ ...
-    imageInputLayer([128 109])
-    fullyConnectedLayer(2^11)
-    fullyConnectedLayer(2^6)
-    bilstmLayer(2^6,'OutputMode','last')
-    fullyConnectedLayer(2^7)
-    fullyConnectedLayer(2)
+    sequenceInputLayer(inputSize)
+    fullyConnectedLayer(inputSize*16)
+    fullyConnectedLayer(inputSize*16)
+    bilstmLayer(inputSize*16,'OutputMode','last')
+    fullyConnectedLayer(inputSize*8)
+    bilstmLayer(inputSize*8,'OutputMode','last')
+    fullyConnectedLayer(inputSize*4)
+    bilstmLayer(inputSize*4,'OutputMode','last')
+    fullyConnectedLayer(inputSize*2)
+    fullyConnectedLayer(inputSize)
+    fullyConnectedLayer(3)
     
     softmaxLayer
     classificationLayer]
-maxEpochs = 100;
+maxEpochs = 25;
 miniBatchSize = 20;
 
 options = trainingOptions('adam', ...

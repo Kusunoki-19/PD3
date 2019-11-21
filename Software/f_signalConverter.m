@@ -10,21 +10,34 @@ signal = limitBand(signal);
 end
 
 function [signal] = limitBand(signal)
-fs = 2000;
-%signal = lowpass(signal,fs/2, fs);
-signal = highpass(signal, 10, fs);
+fs = 1000;
+for i = 1:size(signal,1)
+    
+    signal(i,:) =  lowpass(signal(i,:), 55, fs);
+    signal(i,:) = highpass(signal(i,:), 0.5, fs);
+end
 end
 
-function [signal, dimention] = stftSignal(signal, dimention) 
-fs = 2000;
+function [cnvSignal, dimention] = stftSignal(signal, dimention) 
+fs = 1000;
 % vertical length = dim length = size(signal,1)
 % horizen length = time length = size(signal,2)
-signal = stft(signal, fs);
-signal = abs(signal);
+stftData = [];
+cnvSignal = [];
+for i = 1:size(signal,1)
+    stftData = stft(signal(i,:), fs);
+    
+    stftDim = size(stftData,1);
+    halfDim = cast((stftDim/2)+1,'int8');
+    absData = abs(stftData(1:halfDim+1,:));
+    
+    cnvSignal = vertcat(cnvSignal, absData);
+end
+cnvSignal = abs(cnvSignal);
 
 % vertical length = dim length = size(signal,1)
 % horizen length = time length = size(signal,2)
-dimention = size(signal, 1);
+dimention = size(cnvSignal, 1);
 end
 
 function signal = stftWindow(signal)
@@ -40,7 +53,7 @@ end
 end
 
 function [spectrogram, dimention] = stftOriginal(signal, dimention) 
-fs = 2000;
+fs = 1000;
 sigLen = size(signalX,2);
 
 M = 400; % window length
