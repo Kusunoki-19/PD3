@@ -1,4 +1,3 @@
-clear
 dataPath = strcat(pwd,"\Data\TEST");
 %%
 %データのロード
@@ -9,17 +8,12 @@ numClasses = 2;
 
 layers = [ ...
     sequenceInputLayer(inputSize)
-    fullyConnectedLayer(inputSize*16)
-    fullyConnectedLayer(inputSize*16)
-    bilstmLayer(inputSize*16,'OutputMode','last')
-    fullyConnectedLayer(inputSize*8)
-    bilstmLayer(inputSize*8,'OutputMode','last')
-    fullyConnectedLayer(inputSize*4)
-    bilstmLayer(inputSize*4,'OutputMode','last')
-    fullyConnectedLayer(inputSize*2)
+    bilstmLayer(inputSize,'OutputMode','last')
+    fullyConnectedLayer(inputSize)
+    fullyConnectedLayer(inputSize)
+    fullyConnectedLayer(inputSize)
     fullyConnectedLayer(inputSize)
     fullyConnectedLayer(3)
-    
     softmaxLayer
     classificationLayer]
 maxEpochs = 25;

@@ -5,7 +5,7 @@ function [signal, dimention] = f_signalConverter(signal,dimention)
 
 %   low pass, high pass, stft
 signal = limitBand(signal);
-[signal, dimention] = stftSignal(signal, dimention);
+[signal, dimention] = fftSignal(signal, dimention);
 
 end
 
@@ -13,8 +13,8 @@ function [signal] = limitBand(signal)
 fs = 1000;
 for i = 1:size(signal,1)
     
-    signal(i,:) =  lowpass(signal(i,:), 55, fs);
-    signal(i,:) = highpass(signal(i,:), 0.5, fs);
+    signal(i,:) =  lowpass(signal(i,:), 250, fs);
+    signal(i,:) = highpass(signal(i,:), 0.3, fs);
 end
 end
 
@@ -25,7 +25,7 @@ fs = 1000;
 stftData = [];
 cnvSignal = [];
 for i = 1:size(signal,1)
-    stftData = stft(signal(i,:), fs);
+    stftData = stft(signal(i,:), fs,'FFTLength',1000);
     
     stftDim = size(stftData,1);
     halfDim = cast((stftDim/2)+1,'int8');
@@ -40,6 +40,24 @@ cnvSignal = abs(cnvSignal);
 dimention = size(cnvSignal, 1);
 end
 
+function [cnvSignal, dimention] = fftSignal(signal, dimention) 
+fs = 1000;
+% vertical length = dim length = size(signal,1)
+% horizen length = time length = size(signal,2)
+fftData = [];
+cnvSignal = [];
+for i = 1:size(signal,1)
+    fftData = fft(signal(i,:), fs);
+    absData = abs(fftData);
+    
+    cnvSignal = vertcat(cnvSignal, absData);
+end
+cnvSignal = abs(cnvSignal);
+
+% vertical length = dim length = size(signal,1)
+% horizen length = time length = size(signal,2)
+dimention = size(cnvSignal, 1);
+end
 function signal = stftWindow(signal)
 windowLen = length(signal);
 
