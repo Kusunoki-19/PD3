@@ -1,18 +1,17 @@
-dataPath = strcat(pwd,"\Data\TEST");
+dataPath = "D:\kusunoki\PD3\Software\Data\EEG\20191204";
 %%
 %データのロード
 [XTrain, YTrain, XDim] = f_dataLoader(dataPath);
 %%
 inputSize = XDim;
-numClasses = 2;
+numClasses = 3;
 
 layers = [ ...
     sequenceInputLayer(inputSize)
-    bilstmLayer(inputSize,'OutputMode','last')
-    fullyConnectedLayer(inputSize)
-    fullyConnectedLayer(inputSize)
-    fullyConnectedLayer(inputSize)
-    fullyConnectedLayer(inputSize)
+    bilstmLayer(1000,'OutputMode','last')
+    fullyConnectedLayer(1000)
+    fullyConnectedLayer(1000)
+    fullyConnectedLayer(500)
     fullyConnectedLayer(3)
     softmaxLayer
     classificationLayer]
@@ -20,7 +19,7 @@ maxEpochs = 25;
 miniBatchSize = 20;
 
 options = trainingOptions('adam', ...
-    'ExecutionEnvironment','cpu', ...
+    'ExecutionEnvironment','auto', ...
     'GradientThreshold',1, ...
     'MaxEpochs',maxEpochs, ...
     'MiniBatchSize',miniBatchSize, ...

@@ -1,4 +1,3 @@
-clear
 dataPath = strcat(pwd,"\Data\EEG2018");
 %%
 %データのロード

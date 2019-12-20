@@ -1,12 +1,54 @@
-function [signal, dimention] = f_signalConverter(signal,dimention)
+function [signal, signalDim, signalLen] = f_signalConverter(signal,fs,cutFreqL,cutFreqH)
 %SIGNALCONVERTER Classiferプログラム用の前処理プログラム
 %   signal, double cell
-%   dimention , データ次元数
+%   Fs , サンプリング周波数
 
-%   low pass, high pass, stft
-signal = limitBand(signal);
-[signal, dimention] = fftSignal(signal, dimention);
+signalLen = size(signal,2); %信号長
+signalDim = size(signal,1); %信号次元数
+signalTime = signalLen / fs; %計測時間[s] 
 
+%signal = limitBand(signal);
+
+%[win] = rectangularWindow(signalLen);
+[win] = hammingWindow(signalLen);
+
+[signal, signalDim, signalLen] = fftSignal(signal, win);
+%[signal, dimention] = stftSignal(signal, dimention);
+
+[signal, signalLen] = cutFreq(signal,fs,cutFreqL,cutFreqH);
+end
+
+function[cutSignal, signalLen] = cutFreq(signal,fs,cutFreqL,cutFreqH)
+signalLen = size(signal,2); %信号長
+signalDim = size(signal,1); %信号次元数
+signalTime = signalLen / fs; %計測時間[s] 
+
+usableDataIndex = ...
+    cast(signalLen*(cutFreqL/fs),'uint32') + 1: ...
+    cast(signalLen*(cutFreqH/fs),'uint32') + 1;
+cutSignal = [];
+for i = 1:signalDim
+    %各チャンネル分でループ
+    cutSignal(i,:) = signal(i,usableDataIndex);
+end
+signalLen = size(cutSignal,2);
+end
+
+
+function [rw] = rectangularWindow(N) 
+%RECTANGULARWINDOW 方形窓
+%   N , 窓長さ
+rw = ones(1,N);
+rw(1,1) = 0;
+rw(1,end) = 0;
+end
+
+function [hw] = hammingWindow(N) 
+%HAMMINGWINDOW ハミング窓
+%   N , 窓長さ
+alp = 25/46;
+n = (1:N);
+hw = alp-(1-alp)*cos((2*pi*n)/N);
 end
 
 function [signal] = limitBand(signal)
@@ -16,6 +58,30 @@ for i = 1:size(signal,1)
     signal(i,:) =  lowpass(signal(i,:), 250, fs);
     signal(i,:) = highpass(signal(i,:), 0.3, fs);
 end
+end
+
+function [cnvSignal, signalDim, signalLen] = fftSignal(signal, windowf) 
+fs = 1000;
+% vertical length = dim length = size(signal,1)
+% horizen length = time length = size(signal,2)
+fftData = [];
+cnvSignal = [];
+for i = 1:size(signal,1)
+    signalw = signal(i,:) .* windowf; %process signal with window
+    fftData2 = fft(signalw);
+    
+    %fftData1 = fftData2(1:size(signal,2)/2);
+    %amp1 = abs(fftData1) * 2;
+    %amplog = 20*log10(amp1);
+    amplog = 20*log10(abs(fftData2)) * 2;
+    
+    cnvSignal = vertcat(cnvSignal, amplog);
+end
+
+% vertical length = dim length = size(signal,1)
+% horizen length = time length = size(signal,2)
+signalDim = size(cnvSignal, 1);
+signalLen = size(cnvSignal, 2);
 end
 
 function [cnvSignal, dimention] = stftSignal(signal, dimention) 
@@ -40,24 +106,6 @@ cnvSignal = abs(cnvSignal);
 dimention = size(cnvSignal, 1);
 end
 
-function [cnvSignal, dimention] = fftSignal(signal, dimention) 
-fs = 1000;
-% vertical length = dim length = size(signal,1)
-% horizen length = time length = size(signal,2)
-fftData = [];
-cnvSignal = [];
-for i = 1:size(signal,1)
-    fftData = fft(signal(i,:), fs);
-    absData = abs(fftData);
-    
-    cnvSignal = vertcat(cnvSignal, absData);
-end
-cnvSignal = abs(cnvSignal);
-
-% vertical length = dim length = size(signal,1)
-% horizen length = time length = size(signal,2)
-dimention = size(cnvSignal, 1);
-end
 function signal = stftWindow(signal)
 windowLen = length(signal);
 

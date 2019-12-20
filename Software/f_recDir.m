@@ -10,7 +10,7 @@ curPath = "";
 for i = 1 : length(dirs)
     curPath = strcat(curPath, dirs(i), '\');
 end
-fprintf('\n----- %s -----\n',curPath);
+fprintf('----- %s -----\n',curPath);
 d = dir(curPath);
 
 for i = 1 : length(d)
@@ -30,5 +30,6 @@ for i = 1 : length(d)
         [X, Y, index, dirs, ~, ~] = f_recDir(X, Y, index, dirs, fileCB, folderCB);
     end
 end
+fprintf('\n');
 dirs = dirs(1:end-1); %back to parent directory
 end

@@ -132,3 +132,5 @@ Software/VirtualHand/VirtualHand/Library/
 box/
 *.autosave
 Software/VirtualHand/VirtualHand/Temp/
+Software/Data/EEG/
+Software/Data/TEST/
