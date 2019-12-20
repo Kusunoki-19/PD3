@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -42,10 +42,14 @@ public class ObjectDisplayControl : MonoBehaviour
     {
         IPEndPoint remoteEP = null;
         byte[] data = receiver.Receive(ref remoteEP);
+        //Debug.LogFormat("{0},{1},{2},{3},{4},{5},{6},{7}",data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7]);
+        //Debug.Log(BitConverter.ToDouble(data, 0));
+		//Array.Reverse(data);
+        //Debug.LogFormat("{0},{1},{2},{3},{4},{5},{6},{7}",data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7]);
+        //Debug.Log(BitConverter.ToInt32(data, 0));
         //receiveData = BitConverter.ToInt32(data, 0);
         //Debug.Log(data);
-        //Debug.Log(data[0]);
-        switch (data[0])
+        switch (BitConverter.ToDouble(data, 0))
         {
             case 1:
                 ball.SetActive(true);
