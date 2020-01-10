@@ -30,8 +30,15 @@ if(initialize)
     sampleTime = 5;
     sampleLen = Fs * sampleTime;
     channelNum = 8;
-    numClasses = 3;
-
+    
+    isMultiDisplay = true;
+    
+    trainDataClasses = {"c0","c1","c2"}; %ball, stick, none : c1 c2 c0
+    validDataClasses = { ...
+        "c1" ,"c2" ,"c3" ,"c4" ,"c5" ,"c6" ,"c7" ,"c8" ; ...
+        "c10","c20","c30","c40","c50","c60","c70","c80"}; %c1~8 , c10~80
+    
+    firstCutsec = 10;
     cutFreqL = 0;
     cutFreqH = 50;
     trainRate = 0.5;
@@ -41,28 +48,63 @@ if(preprocess)
     preprocessedData = out1445;
     %最初の数秒を切り取り
     %切り取り秒
-    cutsec = 10;
-    preprocessedData.label     = preprocessedData.label(1+Fs*cutsec:end,:);
-    preprocessedData.rawEEG    = preprocessedData.rawEEG(1+Fs*cutsec:end,:);
-    preprocessedData.timeStamp = preprocessedData.timeStamp(1+Fs*cutsec:end,:);
+    preprocessedData.label     = ...
+        preprocessedData.label(1+Fs*firstCutsec:end,:);
+    preprocessedData.rawEEG    = ...
+        preprocessedData.rawEEG(1+Fs*firstCutsec:end,:);
+    preprocessedData.timeStamp = ...
+        preprocessedData.timeStamp(1+Fs*firstCutsec:end,:);
     %最初切り取られた最初を0秒として調整
-    preprocessedData.timeStamp = preprocessedData.timeStamp - preprocessedData.timeStamp(1,1); 
+    preprocessedData.timeStamp = ...
+        preprocessedData.timeStamp - preprocessedData.timeStamp(1,1); 
 end
 
 if(clip)
     %savePath = "D:\kusunoki\PD3\Software\Data\EEG\2019\12\12\1655";
     
     %現在の日にちでフォルダを作成
-    savePath = strcat(...
+    savePath = ...
+        strcat(...
         "D:\kusunoki\PD3\Software\Data\EEG\", ...
-        datestr(now,"yyyy\\mm\\dd\\HHMM"));
-    mkdir(strcat(savePath,"\c0"));
-    mkdir(strcat(savePath,"\c1"));
-    mkdir(strcat(savePath,"\c2"));
+        datestr(now,"yyyy\\mm\\dd\\HHMM") ...
+        );
+    %新規フォルダの作成
+    for i = 1:size(validDataClasses,1)
+        for j = 1:size(validDataClasses,2)
+            mkdir(strcat(savePath,"\",validDataClasses{i,j}));
+        end
+    end
     
     clipData = preprocessedData;
     %データの分割
     [dataSets, labels] = f_clipDataSets(clipData);
+    
+    
+    %MultiDisplayのときのc10~c80(アナウンスコマンド時)とc0(非表示コマンド時)のデータを連結 
+    preDataSets = dataSets; %置換用データ
+    preLabels   = labels;   %置換用データ
+    newDataSets = {}; %置換用データ
+    newLabels   = {}; %置換用データ
+    setCount = 0;
+    
+    for i = 1:size(preLabels,1)
+        if(nextContinue)
+            continue;
+        end
+        if preLabels(i) == "c0"
+            newDataSet(setCount) = hozcat(preDataSets(i), preDatSets(i+1));
+            newLabels(setCount)  = hozcat(preLabels(i)  , preLabels(i+1) );
+            nextContinue = true;
+        else
+            newDataSet(setCount) = preDataSets(i);
+            newLabels(setCount)  = preLabels(i);
+            nextContinue = false;
+        end
+        setCount = setCount + 1;
+    end
+    
+    dataSets = newDataSets;
+    labels   = newLabels;
     
     %ディレクトリツリーの探索・取得
     [~ , dirTree ] = f_getDirTree(savePath, struct);
