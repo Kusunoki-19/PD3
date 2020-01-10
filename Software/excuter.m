@@ -1,8 +1,28 @@
+%各パラメータの設定
 initialize = true;
-preprocess = false;
-clip = false;
-load = true;
+
+%最初の数秒の切り取り
+preprocess = true;
+
+%データの分割
+%ラベルの変換
+%データの保存
+clip = true;
+
+%時系列信号のロード
+%信号長の違うデータの除外
+%ラベルのごとでデータ数を合わせる
+%学習用データへの変換
+%YTrainの変換 , cell配列 --> categorical配列に変換
+%XTrainの変換 , 時系列信号 --> 振幅特性
+%データを3/4で分割　
+load = false;
+
+%データの学習とロード
 train = false;
+
+%学習データの解析
+%学習結果の解析
 validation = false;
 
 if(initialize)
@@ -18,7 +38,7 @@ if(initialize)
 end
 
 if(preprocess)
-    preprocessedData = out;
+    preprocessedData = out1445;
     %最初の数秒を切り取り
     %切り取り秒
     cutsec = 10;
@@ -53,7 +73,7 @@ if(clip)
         labels{i,1} = num2str(labels{i,1});
         labels{i,1} = strcat('c', labels{i,1});
     end
-    
+    %データの保存
     for i = 1:length(labels)
         dataSet = dataSets{i,1};
         temp = labels(i)
@@ -196,8 +216,6 @@ if(train)
         'Plots','training-progress');
     TESTClassifierNet = trainNetwork(XTrain,YTrain,layers,options);
     
-    
-
     save(strcat(pwd,'\Data\Networks\TESTClassifierNet.mat'),'TESTClassifierNet');
 end
 
