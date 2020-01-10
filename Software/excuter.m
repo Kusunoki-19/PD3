@@ -22,9 +22,9 @@ if(preprocess)
     %Å‰‚Ì”•b‚ğØ‚èæ‚è
     %Ø‚èæ‚è•b
     cutsec = 10;
-    preprocessedData.label     = out.label(1+Fs*cutsec:end,:);
-    preprocessedData.rawEEG    = out.rawEEG(1+Fs*cutsec:end,:);
-    preprocessedData.timeStamp = out.timeStamp(1+Fs*cutsec:end,:);
+    preprocessedData.label     = preprocessedData.label(1+Fs*cutsec:end,:);
+    preprocessedData.rawEEG    = preprocessedData.rawEEG(1+Fs*cutsec:end,:);
+    preprocessedData.timeStamp = preprocessedData.timeStamp(1+Fs*cutsec:end,:);
     %Å‰Ø‚èæ‚ç‚ê‚½Å‰‚ğ0•b‚Æ‚µ‚Ä’²®
     preprocessedData.timeStamp = preprocessedData.timeStamp - preprocessedData.timeStamp(1,1); 
 end
