@@ -27,7 +27,7 @@ for row = 1:length(label(:,1))
     %If label has been changed, clip data set, and renew parameter.
     if newLabel ~= preLabel
         dataSets{setCount,1} = eeg(anchor:(row-1),:);%clip
-        dataSets{setCount,1} = transpose(dataSets{setCount,1});%transpose
+        dataSets{setCount,1} = transpose(dataSets{setCount,1});
         labels{setCount,1} = preLabel;
         anchor = row;
         preLabel = newLabel;
