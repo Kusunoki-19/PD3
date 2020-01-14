@@ -95,7 +95,7 @@ if(clip)
         if labels{i,1} == 0
             %labels(i)が0のとき、次のデータと連結して新しい配列に代入
             newDataSets{setCount,1} = horzcat(dataSets{i,1}, dataSets{i+1,1});
-            newLabels{setCount,1}  = 0;
+            newLabels{setCount,1}  = labels{i+1,1};
             nextContinue = true;
         else
             newDataSets{setCount,1} = dataSets{i,1};
@@ -107,8 +107,6 @@ if(clip)
     dataSets = newDataSets;
     labels   = newLabels;
     
-    %ディレクトリツリーの探索・取得
-    [~ , dirTree ] = f_getDirTree(savePath, struct);
     
     %ラベルの変換
     %数字だけだと構造体のkeyとして認識されないなど不具合も多いので、'1' --> 'c1'のように変換する
@@ -117,6 +115,8 @@ if(clip)
         labels{i,1} = strcat('c', labels{i,1});
     end
     %データの保存
+    %ディレクトリツリーの探索・取得
+    [~ , dirTree ] = f_getDirTree(savePath, struct);
     for i = 1:length(labels)
         dataSet = dataSets{i,1};
         temp = labels(i)
