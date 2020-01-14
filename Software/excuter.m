@@ -81,28 +81,29 @@ if(clip)
     
     
     %MultiDisplayのときのc10~c80(アナウンスコマンド時)とc0(非表示コマンド時)のデータを連結 
-    preDataSets = dataSets; %置換用データ
-    preLabels   = labels;   %置換用データ
+    dataSets = dataSets; %置換用データ
+    labels   = labels;   %置換用データ
     newDataSets = {}; %置換用データ
     newLabels   = {}; %置換用データ
-    setCount = 0;
-    
-    for i = 1:size(preLabels,1)
+    setCount = 1;
+    nextContinue = false;
+    for i = 1:size(labels,1)
         if(nextContinue)
+            nextContinue = false;
             continue;
         end
-        if preLabels(i) == "c0"
-            newDataSet(setCount) = hozcat(preDataSets(i), preDatSets(i+1));
-            newLabels(setCount)  = hozcat(preLabels(i)  , preLabels(i+1) );
+        if labels{i,1} == 0
+            %labels(i)が0のとき、次のデータと連結して新しい配列に代入
+            newDataSets{setCount,1} = horzcat(dataSets{i,1}, dataSets{i+1,1});
+            newLabels{setCount,1}  = 0;
             nextContinue = true;
         else
-            newDataSet(setCount) = preDataSets(i);
-            newLabels(setCount)  = preLabels(i);
-            nextContinue = false;
+            newDataSets{setCount,1} = dataSets{i,1};
+            newLabels{setCount,1}  = labels{i,1};
         end
         setCount = setCount + 1;
     end
-    
+    %連結後の配列を元の配列に再代入
     dataSets = newDataSets;
     labels   = newLabels;
     
