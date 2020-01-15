@@ -1,5 +1,5 @@
 %各パラメータの設定
-initialize = true;
+initialize = false;
 
 %最初の数秒の切り取り
 preprocess = false;
@@ -30,6 +30,8 @@ dList = @(list) 1:length(list);
 %多次元配列の1,2次元のインデックスリスト取り出し用の無名関数の関数ハンドル
 d1List = @(Matrix) 1:size(Matrix,1);
 d2List = @(Matrix) 1:size(Matrix,2);
+%構造体のフィールド文字列リスト取得用の無名関数の関数ハンドル
+fieldList = @(Struct) string(transpose(fieldnamse(Struct)));
 %多次元配列の1,2次元の長さ取り出し用の無名関数の関数ハンドル
 d1Len = @(Matrix) size(Matrix,1);
 d2Len = @(Matrix) size(Matrix,2);
@@ -56,7 +58,7 @@ if(initialize)
 end
 
 if(preprocess)
-    preprocessedData = out1445;
+    preprocessedData = out;
     %最初の数秒を切り取り
     %切り取り秒
     preprocessedData.label     = ...
@@ -203,10 +205,10 @@ if(load)
     %ラベルのごとでデータ数を合わせる
     %各ラベルのインデックス抽出
     categoryIndexes = struct; %indexを格納する構造体作成
-    categoryIndex = [];
-    for i = validClasses(1,:)
+    for i = trainClasses(1,:)
+        categoryIndex = [];
         for j = d1List(YLabel2)
-            if YLabel2{j,1} == i
+            if i{1,1} == YLabel2{j,1}
                 categoryIndex(end+1) = j;
             end
         end
@@ -217,22 +219,18 @@ if(load)
     YLabel3 = {};
     n = 0; %現在のラベル
     k = 1; %現在のインデックス
-    dataNum = min([length(c0Index) ,length(c1Index),length(c2Index)]);
-    for i = 1:dataNum*3
-        if n == 0
-            XSeque3{i,1} = XSeque2{c0Index(k),1};
-            YLabel3{i,1} = YLabel2{c0Index(k),1};
-        elseif n == 1
-            XSeque3{i,1} = XSeque2{c1Index(k),1};
-            YLabel3{i,1} = YLabel2{c1Index(k),1};
-        elseif n == 2
-            XSeque3{i,1} = XSeque2{c2Index(k),1};
-            YLabel3{i,1} = YLabel2{c2Index(k),1};
-            k = k + 1;
+    
+    for fieldName = fieldList(categoryIndexes)
+        indexLen = length(getfield(categoryIndexes, fieldName));
+        if indexLen < minLen
+            minLen = indexLen;
         end
-        n = rem(n+1,3);%n = 0～3のどれか 
-        
     end
+    for fieldName = fieldList(categoryIndexes)
+        categoryIndex = getfield(categoryIndex,fieldName);
+        XSeque3(end:end+minLen,1) = XSeque2(categoryIndex[1:minLen],1);        
+    end
+    
     
     %%学習用データへの変換
     XFreqe = {}; %周波数変換後のデータ
