@@ -183,29 +183,30 @@ if(load)
     XData = XTemp;
     XTemp = {};
     
-    %検証用分割のラベルを学習用分割のラベルに変換
-    YTemp = YData;    
-    
-    for i = d1List(YData)
-        if isStrMatchInCell(YTemp{i,1}, ...
-                {'c10','c20','c30','c40','c50','c60','c70','c80'})
-             %ラベルがc10～80のときc0に変換
-             YTemp{i,1} = 'c0';
-             
-        elseif isStrMatchInCell(YTemp{i,1},{'c1','c2','c4','c5'})
-             %ラベルがc1,2,4,5のときc1(ボール)に変換
-             YTemp{i,1} = 'c1';
-             
-        elseif isStrMatchInCell(YTemp{i,1}, {'c3','c6','c7','c8'})
-             %ラベルがc3,6,7,8のときc2(スティック)に変換
-             YTemp{i,1} = 'c2';
-             
-        else
-             YTemp{i,1} = 'cx'; %どれにも当てはまらなかった謎ラベル
+    if (isMultiDisplay)
+        %検証用分割のラベルを学習用分割のラベルに変換
+        YTemp = YData;    
+        for i = d1List(YData)
+            if isStrMatchInCell(YTemp{i,1}, ...
+                    {'c10','c20','c30','c40','c50','c60','c70','c80'})
+                 %ラベルがc10～80のときc0に変換
+                 YTemp{i,1} = 'c0';
+
+            elseif isStrMatchInCell(YTemp{i,1},{'c1','c2','c4','c5'})
+                 %ラベルがc1,2,4,5のときc1(ボール)に変換
+                 YTemp{i,1} = 'c1';
+
+            elseif isStrMatchInCell(YTemp{i,1}, {'c3','c6','c7','c8'})
+                 %ラベルがc3,6,7,8のときc2(スティック)に変換
+                 YTemp{i,1} = 'c2';
+
+            else
+                 YTemp{i,1} = 'cx'; %どれにも当てはまらなかった謎ラベル
+            end
         end
+        YData = YTemp;
+        YTemp = {};
     end
-    YData = YTemp;
-    YTemp = {};
     
     %ラベルのごとでデータ数を合わせる
     %各ラベルのインデックス抽出
@@ -280,7 +281,6 @@ if(train)
         
         fullyConnectedLayer(512)
         fullyConnectedLayer(256)
-        
         
         fullyConnectedLayer(3)
         softmaxLayer
