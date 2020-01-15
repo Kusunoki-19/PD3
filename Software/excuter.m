@@ -151,9 +151,7 @@ if(load)
     YTemp = {};
     
     %%時系列信号のロード
-    
     [XData, YData] = f_loadDataSets(trainDataPath);
-    
     
     %信号長の違うデータの除外
     usableDataIndex = [];
@@ -169,10 +167,21 @@ if(load)
         XTemp{i,1} = XData{usableDataIndex(i),1};
         YTemp{i,1} = YData{usableDataIndex(i),1};
     end
+    
     XData = XTemp;
     YData = YTemp;
     XTemp = {};
     YTemp = {};
+    
+    %学習用データへの変換
+    %XTrainの変換 , 時系列信号 --> 振幅特性
+    for i = d1List(XData)
+        [XTemp{i,1}, XDim,XLen] = ...
+            f_signalConverter(XData{i,1},Fs,cutFreqL,cutFreqH);
+    end
+    
+    XData = XTemp;
+    XTemp = {};
     
     %検証用分割のラベルを学習用分割のラベルに変換
     YTemp = YData;    
@@ -230,6 +239,8 @@ if(load)
     XTemp = {};
     YTemp = {};
     
+    
+    
     %信号のシャッフル
     randIndex = randperm(size(YData,1));
     for i = 1:length(randIndex)
@@ -241,28 +252,25 @@ if(load)
     XTemp = {};
     YTemp = {};
     
-    %%学習用データへの変換
+    
     %YTrainの変換 , cell配列 --> categorical配列に変換
-    YCateg = {}; %categorical変換後のデータ
     temp = string(YData);%いったん文字列配列に変換
-    YCateg = categorical(temp);%文字列配列をcategoricalへ
+    YTemp = categorical(temp);%文字列配列をcategoricalへ
 
-    %XTrainの変換 , 時系列信号 --> 振幅特性
-    XFreqe = {}; %周波数変換後のデータ
-    for i = d1List(XData)
-        [XFreqe{i,1}, XDim,XLen] = ...
-            f_signalConverter(XData{i,1},Fs,cutFreqL,cutFreqH);
-    end
+    YData = YTemp;
+    YTemp = {};
     
-    %信号の分割
+    %データをtrainRateの割合で分割
+    sep = cast(d1Len(XData)*trainRate,'uint32'); 
     XTrain = {};
+    YTrain = {};
     XValid = {};
-    sep = cast(d1Len(XFreqe)*trainRate,'uint32'); %データを3/4で分割
+    YValid = {};
     
-    XTrain = XFreqe(1:sep); %学習用データ x : 正解周波数配列
-    XValid = XFreqe(sep+1 : end); %検証用データ x
-    YTrain = YCateg(1:sep); %学習用データ y : 正解catetorical配列
-    YValid = YCateg(sep+1 : end); %検証用データ y
+    XTrain = XData(1:sep); %学習用データ x : 正解周波数配列
+    YTrain = YData(1:sep); %学習用データ y : 正解catetorical配列
+    XValid = XData(sep+1 : end); %検証用データ x
+    YValid = YData(sep+1 : end); %検証用データ y
 end
 
 if(train)
@@ -300,9 +308,6 @@ if(validation)
     %学習結果の解析()confuion matrix
     calcConfusionMatrix;
 end
-
-
-
 
 function [] = Saver(val, saveLabel, saveDir, dirTree)
 fieldNames = fieldnames(dirTree);
