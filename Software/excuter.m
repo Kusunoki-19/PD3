@@ -1,5 +1,5 @@
 %各パラメータの設定
-initialize = false;
+initialize = true;
 
 %最初の数秒の切り取り
 preprocess = false;
@@ -19,7 +19,7 @@ clip = false;
 load = true;
 
 %データの学習とロード
-train = false;
+train = true;
 
 %学習データの解析
 %学習結果の解析
@@ -31,7 +31,7 @@ dList = @(list) 1:length(list);
 d1List = @(Matrix) 1:size(Matrix,1);
 d2List = @(Matrix) 1:size(Matrix,2);
 %構造体のフィールド文字列リスト取得用の無名関数の関数ハンドル
-fieldList = @(Struct) string(transpose(fieldnamse(Struct)));
+fieldList = @(Struct) string(transpose(fieldnames(Struct)));
 %多次元配列の1,2次元の長さ取り出し用の無名関数の関数ハンドル
 d1Len = @(Matrix) size(Matrix,1);
 d2Len = @(Matrix) size(Matrix,2);
@@ -145,122 +145,124 @@ if(load)
     %    "D:\kusunoki\PD3\Software\Data\EEG\", ...
     %    datestr(now,"yyyy\\mm\\dd\\HHMM"));
     
+    XData = {};
+    YData = {};
+    XTemp = {};
+    YTemp = {};
+    
     %%時系列信号のロード
-    XSeque0 = {};
-    YLabel0 = {};
-    [XSeque0, YLabel0] = f_loadDataSets(trainDataPath);
-    randIndex = randperm(size(YLabel0,1));
     
-    XSeque1 = {}; %cell配列
-    YLabel1 = {}; %データラベル配列
-    %信号のシャッフル
-    for i = 1:length(randIndex)
-        XSeque1{i,1} = XSeque0{randIndex(i),1};
-        YLabel1{i,1} = YLabel0{randIndex(i),1};
-    end
-    
+    [XData, YData] = f_loadDataSets(trainDataPath);
     
     
     %信号長の違うデータの除外
     usableDataIndex = [];
-    for i = d1List(XSeque1)
-        if d2Len(XSeque1{i,1}) == sampleLen %信号長を比較
+    for i = d1List(XData)
+        if d2Len(XData{i,1}) == sampleLen %信号長を比較
             usableDataIndex(end+1) = i;
         else
             fprintf('unusable data set [i = %d] (unexpected signal length)\n',i);
         end
     end
     
-    XSeque2 = {}; %cell配列
-    YLabel2 = {}; %データラベル配列
-    
     for i = dList(usableDataIndex)
-        XSeque2{i,1} = XSeque1{usableDataIndex(i),1};
-        YLabel2{i,1} = YLabel1{usableDataIndex(i),1};
+        XTemp{i,1} = XData{usableDataIndex(i),1};
+        YTemp{i,1} = YData{usableDataIndex(i),1};
     end
+    XData = XTemp;
+    YData = YTemp;
+    XTemp = {};
+    YTemp = {};
     
-    %検証用分割のデータを学習用分割のデータ型に変換
-    tempLabels = YLabel2;    
+    %検証用分割のラベルを学習用分割のラベルに変換
+    YTemp = YData;    
     
-    for i = d1List(YLabel2)
-        if isStrMatchInCell(tempLabels{i,1}, ...
+    for i = d1List(YData)
+        if isStrMatchInCell(YTemp{i,1}, ...
                 {'c10','c20','c30','c40','c50','c60','c70','c80'})
              %ラベルがc10～80のときc0に変換
-             tempLabels{i,1} = 'c0';
+             YTemp{i,1} = 'c0';
              
-        elseif isStrMatchInCell(tempLabels{i,1},{'c1','c2','c4','c5'})
+        elseif isStrMatchInCell(YTemp{i,1},{'c1','c2','c4','c5'})
              %ラベルがc1,2,4,5のときc1(ボール)に変換
-             tempLabels{i,1} = 'c1';
+             YTemp{i,1} = 'c1';
              
-        elseif isStrMatchInCell(tempLabels{i,1}, {'c3','c6','c7','c8'})
+        elseif isStrMatchInCell(YTemp{i,1}, {'c3','c6','c7','c8'})
              %ラベルがc3,6,7,8のときc2(スティック)に変換
-             tempLabels{i,1} = 'c2';
+             YTemp{i,1} = 'c2';
              
         else
-             tempLabels{i,1} = 'cx'; %どれにも当てはまらなかった謎ラベル
+             YTemp{i,1} = 'cx'; %どれにも当てはまらなかった謎ラベル
         end
     end
-    YLabel2 = tempLabels;
+    YData = YTemp;
+    YTemp = {};
     
     %ラベルのごとでデータ数を合わせる
     %各ラベルのインデックス抽出
     categoryIndexes = struct; %indexを格納する構造体作成
     for i = trainClasses(1,:)
         categoryIndex = [];
-        for j = d1List(YLabel2)
-            if i{1,1} == YLabel2{j,1}
+        for j = d1List(YData)
+            if i{1,1} == YData{j,1}
                 categoryIndex(end+1) = j;
             end
         end
         categoryIndexes = setfield(categoryIndexes, i{1,1}, categoryIndex);
     end
     
-    XSeque3 = {};
-    YLabel3 = {};
-    n = 0; %現在のラベル
-    k = 1; %現在のインデックス
-    
+    minLen = 0;
     for fieldName = fieldList(categoryIndexes)
         indexLen = length(getfield(categoryIndexes, fieldName));
-        if indexLen < minLen
+        if minLen == 0
+            minLen = indexLen;
+        elseif indexLen < minLen
             minLen = indexLen;
         end
     end
     for fieldName = fieldList(categoryIndexes)
-        categoryIndex = getfield(categoryIndex,fieldName);
-        XSeque3(end:end+minLen,1) = XSeque2(categoryIndex[1:minLen],1);        
+        categoryIndex = getfield(categoryIndexes,fieldName);
+        XTemp(end+1:end+minLen, 1) = XData(categoryIndex(1:minLen), 1); 
+        YTemp(end+1:end+minLen, 1) = YData(categoryIndex(1:minLen), 1);        
     end
+    XData = XTemp;
+    YData = YTemp;
+    XTemp = {};
+    YTemp = {};
     
+    %信号のシャッフル
+    randIndex = randperm(size(YData,1));
+    for i = 1:length(randIndex)
+        XTemp{i,1} = XData{randIndex(i),1};
+        YTemp{i,1} = YData{randIndex(i),1};
+    end
+    XData = XTemp;
+    YData = YTemp;
+    XTemp = {};
+    YTemp = {};
     
     %%学習用データへの変換
-    XFreqe = {}; %周波数変換後のデータ
-    YCateg = {}; %categorical変換後のデータ
-    
-    
     %YTrainの変換 , cell配列 --> categorical配列に変換
-    temp = string(YLabel3);%いったん文字列配列に変換
+    YCateg = {}; %categorical変換後のデータ
+    temp = string(YData);%いったん文字列配列に変換
     YCateg = categorical(temp);%文字列配列をcategoricalへ
 
     %XTrainの変換 , 時系列信号 --> 振幅特性
-    for i = d1List(XSeque3)
+    XFreqe = {}; %周波数変換後のデータ
+    for i = d1List(XData)
         [XFreqe{i,1}, XDim,XLen] = ...
-            f_signalConverter(XSeque3{i,1},Fs,cutFreqL,cutFreqH);
+            f_signalConverter(XData{i,1},Fs,cutFreqL,cutFreqH);
     end
     
+    %信号の分割
     XTrain = {};
     XValid = {};
-    sep = cast(d1Len(XFreqe,1)*trainRate,'uint32'); %データを3/4で分割
+    sep = cast(d1Len(XFreqe)*trainRate,'uint32'); %データを3/4で分割
     
+    XTrain = XFreqe(1:sep); %学習用データ x : 正解周波数配列
+    XValid = XFreqe(sep+1 : end); %検証用データ x
     YTrain = YCateg(1:sep); %学習用データ y : 正解catetorical配列
     YValid = YCateg(sep+1 : end); %検証用データ y
-    for i = d1List(XFreqe)
-        if i <= trainRate * sep
-            XTrain{end+1, 1} = XFreqe{i, 1}; %学習用データ x : インプットcell配列
-        else
-            XValid{end+1, 1} = XFreqe{i, 1}; %検証用データ x
-        end
-    end
-    
 end
 
 if(train)
