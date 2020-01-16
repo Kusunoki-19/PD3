@@ -1,26 +1,27 @@
 sumspe = {};
 avgspe = {};
 count = {0,0,0};
+X = XDataForValidClass3;
+Y = YDataForValidClass3;
+
 
 for i = 1:3
     sumspe{i} = zeros(XDim,XLen);
     avgspe{i} = zeros(XDim,XLen);
 end
 
-for i = 1:length(dataY)
-    if dataY(i) == categorical("c0")
+for i = 1:length(Y)
+    if Y(i) == "c0"
         n = 1;
     end
-    if dataY(i) == categorical("c1")
+    if Y(i) == "c1"
         n = 2;
     end
-    if dataY(i) == categorical("c2")
+    if Y(i) == "c2"
         n = 3;
     end
     
-    for j = 1:channelNum
-        sumspe{n}(j,:) = sumspe{n}(j,:) + dataX{i,1}(j,:);
-    end
+    sumspe{n} = sumspe{n} + X{i,1};
     count{n} = count{n} + 1;
 end
 

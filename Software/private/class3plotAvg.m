@@ -4,7 +4,7 @@ for n = 1:3
     plot((1/1000):(1/1000):1,avgsig{n});
     legend('O2 - P4','O1 - P3','O2 - T6','O1 - T5','T6 - T4','T5 - T3'); 
     %}
-    subploter(3,2,n,c);
+    subploter(3,1,n,1);
     xfreqencies = cutFreqL:((cutFreqH - cutFreqL)/XLen):cutFreqH;
     xfreqencies = xfreqencies(1:end-1);
     plot(xfreqencies,avgspe{n});
@@ -17,7 +17,7 @@ for n = 1:3
     else
         temp = "c2";
     end
-    title(strcat(graphName," , data label '",temp,"'"))
+    title(strcat(" , data label '",temp,"'"))
     xlabel('freqency [Hz]');
     ylabel('magnitude [dB]');
     legend('O2 - P4','O1 - P3','O2 - T6','O1 - T5','T6 - T4','T5 - T3','T4 - CP6','T3 - CP3'); 

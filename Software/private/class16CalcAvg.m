@@ -12,18 +12,21 @@ count = {...
 % d1List
 % d2List
 
+X = XDataForValidClass16;
+Y = YDataForValidClass16;
+
 for classIndex = d2List(validClasses)
     sumspe{classIndex} = zeros(XDim,XLen);
     avgspe{classIndex} = zeros(XDim,XLen);
 end
 
 %各データごとでループ
-for dataIndex = d1List(XDataForValidation)
+for dataIndex = d1List(X)
     %各クラスごとで処理の分岐ループ
     for classIndex = d2List(validClasses)
-        if YDataForValidation{dataIndex} == validClasses{classIndex}
+        if Y{dataIndex} == validClasses{classIndex}
             sumspe{classIndex} = ...
-                sumMatrix(sumspe{classIndex}, XDataForValidation{dataIndex});
+                sumMatrix(sumspe{classIndex}, X{dataIndex});
             %各クラスごとでデータ数をカウント
             count{classIndex} = count{classIndex} + 1;
         end
@@ -46,5 +49,7 @@ if size(matrix1)  == size(matrix2)
             XDataForValidation{dataIndex}(j,:);
     end
     %}
+else
+    disp('行列の長さが合わない');
 end
 end

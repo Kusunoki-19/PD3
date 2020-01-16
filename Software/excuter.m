@@ -19,7 +19,7 @@ clip = false;
 load = true;
 
 %データの学習とロード
-train = true;
+train = false;
 
 %学習データの解析
 %学習結果の解析
@@ -46,15 +46,18 @@ if(initialize)
     
     isMultiDisplay = true;
     
-    trainClasses = {"c0","c1","c2"}; %ball, stick, none : c1 c2 c0
-    validClasses = { ...
-        "c1" ,"c2" ,"c3" ,"c4" ,"c5" ,"c6" ,"c7" ,"c8" , ...
-        "c10","c20","c30","c40","c50","c60","c70","c80"}; %c1~8 , c10~80
+    trainClasses = {'c0','c1','c2'}; %ball, stick, none : c1 c2 c0
+    if(isMultiDisplay)
+        %c1~8 , c10~80
+        validClasses = { ... 
+            'c1' ,'c2' ,'c3' ,'c4' ,'c5' ,'c6' ,'c7' ,'c8' , ...
+            'c10','c20','c30','c40','c50','c60','c70','c80'}; 
+    end
     
     firstCutsec = 10;
     cutFreqL = 0;
     cutFreqH = 50;
-    trainRate = 0.5;
+    trainRate = 0.75;
 end
 
 if(preprocess)
@@ -92,7 +95,6 @@ if(clip)
     %データの分割
     [dataSets, labels] = f_clipDataSets(clipData);
     
-    
     %MultiDisplayのときのc10~c80(アナウンスコマンド時)とc0(非表示コマンド時)のデータを連結 
     dataSets = dataSets; %置換用データ
     labels   = labels;   %置換用データ
@@ -119,7 +121,6 @@ if(clip)
     %連結後の配列を元の配列に再代入
     dataSets = newDataSets;
     labels   = newLabels;
-    
     
     %ラベルの変換
     %数字だけだと構造体のkeyとして認識されないなど不具合も多いので、'1' --> 'c1'のように変換する
@@ -183,6 +184,9 @@ if(load)
     XData = XTemp;
     XTemp = {};
     
+    XDataForValidClass16 = XData; %各信号を検証するためにデータを保存しておく
+    YDataForValidClass16 = YData; %各信号を検証するためにデータを保存しておく
+    
     if (isMultiDisplay)
         %検証用分割のラベルを学習用分割のラベルに変換
         YTemp = YData;    
@@ -207,6 +211,9 @@ if(load)
         YData = YTemp;
         YTemp = {};
     end
+    
+    XDataForValidClass3 = XData; %各信号を検証するためにデータを保存しておく
+    YDataForValidClass3 = YData; %各信号を検証するためにデータを保存しておく
     
     %ラベルのごとでデータ数を合わせる
     %各ラベルのインデックス抽出
@@ -239,8 +246,6 @@ if(load)
     YData = YTemp;
     XTemp = {};
     YTemp = {};
-    
-    
     
     %信号のシャッフル
     randIndex = randperm(size(YData,1));
