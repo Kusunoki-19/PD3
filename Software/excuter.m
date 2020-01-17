@@ -3,6 +3,9 @@ initialize = true;
 
 %最初の数秒の切り取り
 preprocess = false;
+if preprocess
+    preprocessedData = out;
+end
 
 %データの分割
 %ラベルの変換
@@ -17,13 +20,23 @@ clip = false;
 %XTrainの変換 , 時系列信号 --> 振幅特性
 %データを3/4で分割　
 load = true;
+experimental = 2;
+if load
+    if experimental == 1
+        isMultiDisplay = false;
+        trainDataPath = "D:\kusunoki\PD3\Software\Data\EEG\2019";
+    elseif experimental == 2
+        isMultiDisplay = true;
+        trainDataPath = "D:\kusunoki\PD3\Software\Data\EEG\2020";
+    end
+end
 
 %データの学習とロード
 train = false;
 
 %学習データの解析
 %学習結果の解析
-validation = false;
+validation = true;
 
 %1次元配列のインデックスリスト取り出し用の無名関数の関数ハンドル
 dList = @(list) 1:length(list);
@@ -44,7 +57,6 @@ if(initialize)
     sampleLen = Fs * sampleTime;
     channelNum = 8;
     
-    isMultiDisplay = true;
     
     trainClasses = {'c0','c1','c2'}; %ball, stick, none : c1 c2 c0
     if(isMultiDisplay)
@@ -61,7 +73,6 @@ if(initialize)
 end
 
 if(preprocess)
-    preprocessedData = out;
     %最初の数秒を切り取り
     %切り取り秒
     preprocessedData.label     = ...
@@ -141,7 +152,10 @@ if(clip)
 end
 
 if(load)
-    trainDataPath = "D:\kusunoki\PD3\Software\Data\EEG\2020\01\14\1213";
+    XDataForValidClass3 = {};
+    YDataForValidClass3 = {};
+    XDataForValidClass16 = {};
+    YDataForValidClass16 = {};
     %trainDataPath = strcat(...
     %    "D:\kusunoki\PD3\Software\Data\EEG\", ...
     %    datestr(now,"yyyy\\mm\\dd\\HHMM"));
@@ -305,13 +319,17 @@ if(train)
     TESTClassifierNet = trainNetwork(XTrain,YTrain,layers,options);
     
     save(strcat(pwd,'\Data\Networks\TESTClassifierNet.mat'),'TESTClassifierNet');
+    %学習結果の解析()confuion matrix
+    calcConfusionMatrix;
 end
 
 if(validation)
     %学習データの解析
-    plotTrainAndValid;
-    %学習結果の解析()confuion matrix
-    calcConfusionMatrix;
+    class3CalcAvg;
+    %figure;
+    %class3PlotAvg;
+    figure;
+    class3PlotDiff;
 end
 
 function [] = Saver(val, saveLabel, saveDir, dirTree)
