@@ -34,32 +34,6 @@ end
 signalLen = size(cutSignal,2);
 end
 
-
-function [rw] = rectangularWindow(N) 
-%RECTANGULARWINDOW 方形窓
-%   N , 窓長さ
-rw = ones(1,N);
-rw(1,1) = 0;
-rw(1,end) = 0;
-end
-
-function [hw] = hammingWindow(N) 
-%HAMMINGWINDOW ハミング窓
-%   N , 窓長さ
-alp = 25/46;
-n = (1:N);
-hw = alp-(1-alp)*cos((2*pi*n)/N);
-end
-
-function [signal] = limitBand(signal)
-fs = 1000;
-for i = 1:size(signal,1)
-    
-    signal(i,:) =  lowpass(signal(i,:), 250, fs);
-    signal(i,:) = highpass(signal(i,:), 0.3, fs);
-end
-end
-
 function [cnvSignal, signalDim, signalLen] = fftSignal(signal, windowf) 
 fs = 1000;
 % vertical length = dim length = size(signal,1)
@@ -84,6 +58,15 @@ signalDim = size(cnvSignal, 1);
 signalLen = size(cnvSignal, 2);
 end
 
+function [P1] = fftEMG(signalX)
+L = size(signalX,2);
+fftX = fft(signalX);
+P2 = abs(fftX/L); %信号の絶対値
+P1 = P2(1:cast((L/2)+1,'int8')); %両側スペクトルを片側スペクトルへ
+P1(2:end-1) = 2*P1(2:end-1); %振幅を2倍
+
+end
+
 function [cnvSignal, dimention] = stftSignal(signal, dimention) 
 fs = 1000;
 % vertical length = dim length = size(signal,1)
@@ -104,18 +87,6 @@ cnvSignal = abs(cnvSignal);
 % vertical length = dim length = size(signal,1)
 % horizen length = time length = size(signal,2)
 dimention = size(cnvSignal, 1);
-end
-
-function signal = stftWindow(signal)
-windowLen = length(signal);
-
-for i = 1:windowLen
-    w = ((i - 1) / (windowLen - 1))*2;
-    if w > 1
-        w = 2 - w;
-    end
-    signal(i) = w * signal(i);
-end
 end
 
 function [spectrogram, dimention] = stftOriginal(signal, dimention) 
@@ -171,15 +142,6 @@ end
 dimention = size(spectrogram, 1);
 end
 
-function [P1] = fftEMG(signalX)
-L = size(signalX,2);
-fftX = fft(signalX);
-P2 = abs(fftX/L); %信号の絶対値
-P1 = P2(1:cast((L/2)+1,'int8')); %両側スペクトルを片側スペクトルへ
-P1(2:end-1) = 2*P1(2:end-1); %振幅を2倍
-
-end
-
 function [P1] = stftEMG(signalX)
 L = size(signalX,2);
 stftX = stft(signalX);
@@ -187,5 +149,44 @@ P1 = abs(stftX/L); %信号の絶対値
 %P2 = abs(stftX/L); %信号の絶対値
 %P1 = P2( 1:cast((L/2)+1,'int8') , :); %両側スペクトルを片側スペクトルへ
 %P1(2:end-1) = 2*P1(2:end-1); %振幅を2倍
-
 end
+
+function [rw] = rectangularWindow(N) 
+%RECTANGULARWINDOW 方形窓
+%   N , 窓長さ
+rw = ones(1,N);
+rw(1,1) = 0;
+rw(1,end) = 0;
+end
+
+function [hw] = hammingWindow(N) 
+%HAMMINGWINDOW ハミング窓
+%   N , 窓長さ
+alp = 25/46;
+n = (1:N);
+hw = alp-(1-alp)*cos((2*pi*n)/N);
+end
+
+function signal = stftWindow(signal)
+windowLen = length(signal);
+
+for i = 1:windowLen
+    w = ((i - 1) / (windowLen - 1))*2;
+    if w > 1
+        w = 2 - w;
+    end
+    signal(i) = w * signal(i);
+end
+end
+
+function [signal] = limitBandFilter(signal)
+fs = 1000;
+for i = 1:size(signal,1)
+    
+    signal(i,:) =  lowpass(signal(i,:), 250, fs);
+    signal(i,:) = highpass(signal(i,:), 0.3, fs);
+end
+end
+
+
+

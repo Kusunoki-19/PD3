@@ -191,8 +191,12 @@ if(load)
     %学習用データへの変換
     %XTrainの変換 , 時系列信号 --> 振幅特性
     for i = d1List(XData)
+        %f_signalConverter --> デシベル変換後の値
+        %[XTemp{i,1}, XDim,XLen] = ...
+        %    f_signalConverter(XData{i,1},Fs,cutFreqL,cutFreqH);
+        %f_signalConverter2 --> デシベル変換前の値
         [XTemp{i,1}, XDim,XLen] = ...
-            f_signalConverter(XData{i,1},Fs,cutFreqL,cutFreqH);
+            f_signalConverter2(XData{i,1},Fs,cutFreqL,cutFreqH);
     end
     
     XData = XTemp;
