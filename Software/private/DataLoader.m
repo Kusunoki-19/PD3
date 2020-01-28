@@ -1,4 +1,4 @@
-function[XTrain, YTrain, XDim] = f_dataLoader(dataPath)
+function[XTrain, YTrain, XDim] = DataLoader(dataPath)
 %F_DATALOADER データの読み込み
 %   dataPath , string , データの絶対パス
 %%

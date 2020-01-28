@@ -1,5 +1,3 @@
-
-
 %1次元配列のインデックスリスト取り出し用の無名関数の関数ハンドル
 dList = @(list) 1:length(list);
 %多次元配列の1,2次元のインデックスリスト取り出し用の無名関数の関数ハンドル
@@ -18,14 +16,28 @@ sampleTime = 5;
 sampleLen = Fs * sampleTime;
 channelNum = 8;
 
+ExperiNum = 2;
 
 trainClasses = {'c0','c1','c2'}; %ball, stick, none : c1 c2 c0
-if(isMultiDisplay)
+if ExperiNum == 2
     %c1~8 , c10~80
     validClasses = { ... 
         'c1' ,'c2' ,'c3' ,'c4' ,'c5' ,'c6' ,'c7' ,'c8' , ...
         'c10','c20','c30','c40','c50','c60','c70','c80'}; 
 end
+
+if ExperiNum == 1
+    isMultiDisplay = false;
+    dataPath = "D:\kusunoki\PD3\Software\Data\Experimental1";
+
+elseif ExperiNum == 2
+    isMultiDisplay = true;
+    dataPath = "D:\kusunoki\PD3\Software\Data\Experimental2";
+end
+trainDataPath = dataPath;
+savePath = strcat(...
+    dataPath, "\", ...
+    datestr(now,"yyyy\\mm\\dd\\HHMM"));
 
 firstCutsec = 10;
 cutFreqL = 0;

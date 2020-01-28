@@ -2,7 +2,7 @@
 %rawData =  testRawData
 %dataPath = strcat( pwd, "\Data\EMG2019");
 
-function edit_saveRawData(savePath , rawData)
+function Edit_saveRawData(savePath , rawData)
 %EDIT_SAVERAWDATA rawDataをdataSetsとして編集後保存
 % savePath , string , データ保存ディレクトリのフルパス
 

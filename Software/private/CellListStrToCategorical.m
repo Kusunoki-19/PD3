@@ -1,4 +1,4 @@
-function [categoricalData] = f_cellListStrToCategorical(cellListStr)
+function [categoricalData] = CellListStrToCategorical(cellListStr)
 %CELLLISTSTRINGTOCATEGORICAL cell,list,stringデータ→categoricalデータに変換
 %   cellListStr , cell,list,stringデータ
 cellStr = {};

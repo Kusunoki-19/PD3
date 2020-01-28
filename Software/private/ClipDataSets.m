@@ -1,4 +1,4 @@
-function [dataSets,labels] = f_clipDataSets(outData)
+function [dataSets,labels] = ClipDataSets(outData)
 %CLIPDATASETS clip data sets 
 %   clip from raw EEG/EMG data recorded by simulink
 

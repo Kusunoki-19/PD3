@@ -1,4 +1,4 @@
-function [signal, signalDim, signalLen] = f_signalConverter(signal,fs,cutFreqL,cutFreqH)
+function [signal, signalDim, signalLen] = SignalConverter(signal,fs,cutFreqL,cutFreqH)
 %SIGNALCONVERTER Classiferプログラム用の前処理プログラム
 %   signal, double cell
 %   Fs , サンプリング周波数

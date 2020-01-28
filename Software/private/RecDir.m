@@ -1,4 +1,4 @@
-function [X, Y, index, dirs, fileCB, folderCB] = f_recDir(X, Y, index, dirs, fileCB, folderCB)
+function [X, Y, index, dirs, fileCB, folderCB] = RecDir(X, Y, index, dirs, fileCB, folderCB)
 %RECDIR 与えられたpathのディレクトリを再帰的に探索
 %   X , cellリスト , データ本体の情報
 %   Y , cellリスト , データのラベル情報
@@ -27,7 +27,7 @@ for i = 1 : length(d)
         [X, Y] = folderCB(X, Y, folderName, dirs);
         
         dirs(end+1) = folderName; %forward to child directory
-        [X, Y, index, dirs, ~, ~] = f_recDir(X, Y, index, dirs, fileCB, folderCB);
+        [X, Y, index, dirs, ~, ~] = RecDir(X, Y, index, dirs, fileCB, folderCB);
     end
 end
 fprintf('\n');
