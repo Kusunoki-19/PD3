@@ -5,9 +5,18 @@ for n = 1:3
     plot((1/1000):(1/1000):1,avgsig{n});
     legend('O2 - P4','O1 - P3','O2 - T6','O1 - T5','T6 - T4','T5 - T3'); 
     %}
+<<<<<<< HEAD
     subplot1 = subploter(3,1,n,1);
     plot1 = plot(xfreqencies,avgspe{n});
     %plot(xfreqencies,20*log10(avgspe{n}));
+=======
+    subploter(3,2,n,c);
+    xfreqencies = cutFreqL:((cutFreqH - cutFreqL)/XLen):cutFreqH;
+    xfreqencies = xfreqencies(1:end-1);
+    plot(xfreqencies,avgspe{n});
+    xlim([0,40]);
+    ylim([-25,60]);
+>>>>>>> ce417e96c23e7daf078494f9b1a742d62edc7866
     if n == 1
         temp = "only background";
     elseif n == 2
@@ -31,6 +40,13 @@ for n = 1:3
         setXLim;
         setYLimLinear;
     end
+<<<<<<< HEAD
+=======
+    title(strcat(graphName," , data label '",temp,"'"))
+    xlabel('freqency [Hz]');
+    ylabel('magnitude [dB]');
+    legend('O2 - P4','O1 - P3','O2 - T6','O1 - T5','T6 - T4','T5 - T3','T4 - CP6','T3 - CP3'); 
+>>>>>>> ce417e96c23e7daf078494f9b1a742d62edc7866
 end
 function[subs] =  subploter(rownum,colnum,r,c)
 subs = subplot(rownum,colnum,(r-1)*colnum + c);
