@@ -24,10 +24,10 @@ experimental = 1;
 if load
     if experimental == 1
         isMultiDisplay = false;
-        trainDataPath = "D:\kusunoki\PD3\Software\Data\EEG\2019";
+        trainDataPath = "D:\kusunoki\PD3\Software\Data\Experimental1";
     elseif experimental == 2
         isMultiDisplay = true;
-        trainDataPath = "D:\kusunoki\PD3\Software\Data\EEG\2020";
+        trainDataPath = "D:\kusunoki\PD3\Software\Data\Experimental2";
     end
 end
 
