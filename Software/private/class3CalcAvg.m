@@ -11,13 +11,13 @@ for i = 1:3
 end
 
 for i = 1:length(Y)
-    if Y(i) == "c0"
+    if string(Y(i)) == "c0"
         n = 1;
     end
-    if Y(i) == "c1"
+    if string(Y(i)) == "c1"
         n = 2;
     end
-    if Y(i) == "c2"
+    if string(Y(i)) == "c2"
         n = 3;
     end
     
@@ -27,4 +27,13 @@ end
 
 for n = 1:3
     avgspe{n} = sumspe{n} / count{n};
+end
+
+xfreqencies = calcXFreq(cutFreqL,cutFreqH);
+
+function xfreqencies = calcXFreq(cutFreqL,cutFreqH)
+    fs = 1000;
+    N = 5 * 1000;
+    deltaF = fs / N;
+    xfreqencies = cutFreqL:deltaF:cutFreqH;
 end

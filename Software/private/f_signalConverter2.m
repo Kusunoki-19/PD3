@@ -43,7 +43,7 @@ cnvSignal = [];
 for i = 1:size(signal,1)
     signalw = signal(i,:) .* windowf; %process signal with window
     fftData2 = fft(signalw);
-    absData = abs(fftData2)
+    absData = abs(fftData2);
     cnvSignal = vertcat(cnvSignal, absData);
 end
 

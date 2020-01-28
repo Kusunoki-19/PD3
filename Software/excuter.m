@@ -20,7 +20,7 @@ clip = false;
 %XTrainの変換 , 時系列信号 --> 振幅特性
 %データを3/4で分割　
 load = true;
-experimental = 2;
+experimental = 1;
 if load
     if experimental == 1
         isMultiDisplay = false;
@@ -68,7 +68,7 @@ if(initialize)
     
     firstCutsec = 10;
     cutFreqL = 0;
-    cutFreqH = 50;
+    cutFreqH = 200;
     trainRate = 0.75;
 end
 
@@ -330,10 +330,10 @@ end
 if(validation)
     %学習データの解析
     class3CalcAvg;
-    %figure;
-    %class3PlotAvg;
     figure;
-    class3PlotDiff;
+    class3PlotAvg;
+    %figure;
+    %class3PlotDiff;
 end
 
 function [] = Saver(val, saveLabel, saveDir, dirTree)
