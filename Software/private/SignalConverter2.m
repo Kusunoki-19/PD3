@@ -1,19 +1,14 @@
 function [signal, signalDim, signalLen] = SignalConverter(signal,fs,cutFreqL,cutFreqH)
 %SIGNALCONVERTER Classiferプログラム用の前処理プログラム
-%   signal, double cell
-%   Fs , サンプリング周波数
 
 signalLen = size(signal,2); %信号長
 signalDim = size(signal,1); %信号次元数
 signalTime = signalLen / fs; %計測時間[s] 
 
-%signal = limitBand(signal);
-
 %[win] = rectangularWindow(signalLen);
 [win] = hammingWindow(signalLen);
 
 [signal, signalDim, signalLen] = fftAbs(signal, win);
-%[signal, dimention] = stftSignal(signal, dimention);
 
 [signal, signalLen] = cutFreq(signal,fs,cutFreqL,cutFreqH);
 end

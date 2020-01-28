@@ -1,32 +1,8 @@
-%各パラメータの設定
 initialize = true;
-
-%最初の数秒の切り取り
 preprocess = false;
-if preprocess
-    preprocessedData = out;
-end
-
-%データの分割
-%ラベルの変換
-%データの保存
-clip = false;
-
-%時系列信号のロード
-
-%信号長の違うデータの除外
-%ラベルのごとでデータ数を合わせる
-%学習用データへの変換
-%YTrainの変換 , cell配列 --> categorical配列に変換
-%XTrainの変換 , 時系列信号 --> 振幅特性
-%データを3/4で分割　
-load = true;
-
-%データの学習とロード
-train = false;
-
-%学習データの解析
-%学習結果の解析
+clip       = false;
+load       = true;
+train      = false;
 validation = true;
 
 if(initialize)
@@ -34,6 +10,7 @@ if(initialize)
 end
 
 if(preprocess)
+    preprocessedData = out;
     %最初の数秒を切り取り
     %切り取り秒
     preprocessedData.label     = ...
@@ -50,12 +27,6 @@ end
 
 if(clip)
     
-    %現在の日にちでフォルダを作成
-    savePath = ...
-        strcat(...
-        "D:\kusunoki\PD3\Software\Data\EEG\", ...
-        datestr(now,"yyyy\\mm\\dd\\HHMM") ...
-        );
     %新規フォルダの作成
     for i = 1:size(validClasses,1)
         for j = 1:size(validClasses,2)
