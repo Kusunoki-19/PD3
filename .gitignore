@@ -136,3 +136,5 @@ Software/Data/EEG/
 Software/Data/TEST/
 Software/EEGObjectDisplayer/ObjectDisplayer/Temp/UnityTempFile-0b96cfa57be5e5840b8b338cdbbcc831
 Software/EEGObjectDisplayer/ObjectDisplayer/Temp/
+Software/Data/
+*.original
