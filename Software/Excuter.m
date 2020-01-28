@@ -21,16 +21,6 @@ clip = false;
 %XTrainの変換 , 時系列信号 --> 振幅特性
 %データを3/4で分割　
 load = true;
-experimental = 1;
-if load
-    if experimental == 1
-        isMultiDisplay = false;
-        trainDataPath = "D:\kusunoki\PD3\Software\Data\Experimental1";
-    elseif experimental == 2
-        isMultiDisplay = true;
-        trainDataPath = "D:\kusunoki\PD3\Software\Data\Experimental2";
-    end
-end
 
 %データの学習とロード
 train = false;
@@ -74,9 +64,11 @@ if(clip)
     end
     
     clipData = preprocessedData;
+    %%
     %データの分割
     [dataSets, labels] = f_clipDataSets(clipData);
     
+    %%
     %MultiDisplayのときのc10~c80(アナウンスコマンド時)とc0(非表示コマンド時)のデータを連結 
     dataSets = dataSets; %置換用データ
     labels   = labels;   %置換用データ
@@ -112,12 +104,12 @@ if(clip)
     end
     %データの保存
     %ディレクトリツリーの探索・取得
-    [~ , dirTree ] = f_getDirTree(savePath, struct);
+    [~ , dirTree ] = GetDirTree(savePath, struct);
     for i = 1:length(labels)
         dataSet = dataSets{i,1};
         temp = labels(i)
         temp = temp{1,1}
-        [~ , dirTree ] = f_getDirTree(savePath, struct);
+        [~ , dirTree ] = GetDirTree(savePath, struct);
         Saver(dataSet, temp,  savePath, dirTree);
     end
 end
@@ -136,7 +128,8 @@ if(load)
     XTemp = {};
     YTemp = {};
     
-    %%時系列信号のロード
+    %%
+    %時系列信号のロード
     [XData, YData] = f_loadDataSets(trainDataPath);
     
     %信号長の違うデータの除外
@@ -154,11 +147,9 @@ if(load)
         YTemp{i,1} = YData{usableDataIndex(i),1};
     end
     
-    XData = XTemp;
-    YData = YTemp;
-    XTemp = {};
-    YTemp = {};
+    XData = XTemp; YData = YTemp; XTemp = {}; YTemp = {};
     
+    %%
     %学習用データへの変換
     %XTrainの変換 , 時系列信号 --> 振幅特性
     for i = d1List(XData)
@@ -170,14 +161,13 @@ if(load)
             f_signalConverter2(XData{i,1},Fs,cutFreqL,cutFreqH);
     end
     
-    XData = XTemp;
-    XTemp = {};
-    
+    XData = XTemp; YData = YTemp; XTemp = {}; YTemp = {};
     XDataForValidClass16 = XData; %各信号を検証するためにデータを保存しておく
     YDataForValidClass16 = YData; %各信号を検証するためにデータを保存しておく
     
-    if (isMultiDisplay)
-        %検証用分割のラベルを学習用分割のラベルに変換
+    %%
+    %検証用分割のラベルを学習用分割のラベルに変換
+    if experiNum == 2
         YTemp = YData;    
         for i = d1List(YData)
             if isStrMatchInCell(YTemp{i,1}, ...
@@ -197,13 +187,13 @@ if(load)
                  YTemp{i,1} = 'cx'; %どれにも当てはまらなかった謎ラベル
             end
         end
-        YData = YTemp;
-        YTemp = {};
+        XData = XTemp; YData = YTemp; XTemp = {}; YTemp = {};
     end
     
     XDataForValidClass3 = XData; %各信号を検証するためにデータを保存しておく
     YDataForValidClass3 = YData; %各信号を検証するためにデータを保存しておく
     
+    %%
     %ラベルのごとでデータ数を合わせる
     %各ラベルのインデックス抽出
     categoryIndexes = struct; %indexを格納する構造体作成
@@ -231,30 +221,24 @@ if(load)
         XTemp(end+1:end+minLen, 1) = XData(categoryIndex(1:minLen), 1); 
         YTemp(end+1:end+minLen, 1) = YData(categoryIndex(1:minLen), 1);        
     end
-    XData = XTemp;
-    YData = YTemp;
-    XTemp = {};
-    YTemp = {};
+    XData = XTemp; YData = YTemp; XTemp = {}; YTemp = {};
     
+    %%
     %信号のシャッフル
     randIndex = randperm(size(YData,1));
     for i = 1:length(randIndex)
         XTemp{i,1} = XData{randIndex(i),1};
         YTemp{i,1} = YData{randIndex(i),1};
     end
-    XData = XTemp;
-    YData = YTemp;
-    XTemp = {};
-    YTemp = {};
-    
-    
+    XData = XTemp; YData = YTemp; XTemp = {}; YTemp = {};
+    %%
     %YTrainの変換 , cell配列 --> categorical配列に変換
     temp = string(YData);%いったん文字列配列に変換
     YTemp = categorical(temp);%文字列配列をcategoricalへ
 
-    YData = YTemp;
-    YTemp = {};
+    XData = XTemp; YData = YTemp; XTemp = {}; YTemp = {};
     
+    %%
     %データをtrainRateの割合で分割
     sep = cast(d1Len(XData)*trainRate,'uint32'); 
     XTrain = {};
