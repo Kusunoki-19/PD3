@@ -35,6 +35,7 @@ for n = 1:3
             hold on
             plot([10.8 10.8],[-100 100],'Color','k','LineStyle','--');
             tempLegend = {};
+            %–}—á‚Ìˆê•”‚ğíœ
             for i = 1:size(legend1.String,2) - 1
                 tempLegend{end+1} = legend1.String{i};
             end
