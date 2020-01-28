@@ -45,10 +45,10 @@ if(preprocess)
     %最初切り取られた最初を0秒として調整
     preprocessedData.timeStamp = ...
         preprocessedData.timeStamp - preprocessedData.timeStamp(1,1); 
+    handlingData = preprocessedData;
 end
 
 if(clip)
-    %savePath = "D:\kusunoki\PD3\Software\Data\EEG\2019\12\12\1655";
     
     %現在の日にちでフォルダを作成
     savePath = ...
@@ -63,38 +63,38 @@ if(clip)
         end
     end
     
-    clipData = preprocessedData;
-    %%
-    %データの分割
-    [dataSets, labels] = f_clipDataSets(clipData);
     
-    %%
-    %MultiDisplayのときのc10~c80(アナウンスコマンド時)とc0(非表示コマンド時)のデータを連結 
-    dataSets = dataSets; %置換用データ
-    labels   = labels;   %置換用データ
-    newDataSets = {}; %置換用データ
-    newLabels   = {}; %置換用データ
-    setCount = 1;
-    nextContinue = false;
-    for i = 1:size(labels,1)
-        if(nextContinue)
-            nextContinue = false;
-            continue;
+    %データの分割
+    [dataSets, labels] = f_clipDataSets(handlingData);
+    
+    if experiNum == 2
+        %MultiDisplayのときのc10~c80(アナウンスコマンド時)とc0(非表示コマンド時)のデータを連結 
+        dataSets = dataSets; %置換用データ
+        labels   = labels;   %置換用データ
+        newDataSets = {}; %置換用データ
+        newLabels   = {}; %置換用データ
+        setCount = 1;
+        nextContinue = false;
+        for i = 1:size(labels,1)
+            if(nextContinue)
+                nextContinue = false;
+                continue;
+            end
+            if labels{i,1} == 0
+                %labels(i)が0のとき、次のデータと連結して新しい配列に代入
+                newDataSets{setCount,1} = horzcat(dataSets{i,1}, dataSets{i+1,1});
+                newLabels{setCount,1}  = labels{i+1,1};
+                nextContinue = true;
+            else
+                newDataSets{setCount,1} = dataSets{i,1};
+                newLabels{setCount,1}  = labels{i,1};
+            end
+            setCount = setCount + 1;
         end
-        if labels{i,1} == 0
-            %labels(i)が0のとき、次のデータと連結して新しい配列に代入
-            newDataSets{setCount,1} = horzcat(dataSets{i,1}, dataSets{i+1,1});
-            newLabels{setCount,1}  = labels{i+1,1};
-            nextContinue = true;
-        else
-            newDataSets{setCount,1} = dataSets{i,1};
-            newLabels{setCount,1}  = labels{i,1};
-        end
-        setCount = setCount + 1;
+        %連結後の配列を元の配列に再代入
+        dataSets = newDataSets;
+        labels   = newLabels;
     end
-    %連結後の配列を元の配列に再代入
-    dataSets = newDataSets;
-    labels   = newLabels;
     
     %ラベルの変換
     %数字だけだと構造体のkeyとして認識されないなど不具合も多いので、'1' --> 'c1'のように変換する
@@ -128,7 +128,7 @@ if(load)
     XTemp = {};
     YTemp = {};
     
-    %%
+    
     %時系列信号のロード
     [XData, YData] = f_loadDataSets(trainDataPath);
     
@@ -149,7 +149,7 @@ if(load)
     
     XData = XTemp; YData = YTemp; XTemp = {}; YTemp = {};
     
-    %%
+    
     %学習用データへの変換
     %XTrainの変換 , 時系列信号 --> 振幅特性
     for i = d1List(XData)
@@ -165,7 +165,7 @@ if(load)
     XDataForValidClass16 = XData; %各信号を検証するためにデータを保存しておく
     YDataForValidClass16 = YData; %各信号を検証するためにデータを保存しておく
     
-    %%
+    
     %検証用分割のラベルを学習用分割のラベルに変換
     if experiNum == 2
         YTemp = YData;    
@@ -193,7 +193,7 @@ if(load)
     XDataForValidClass3 = XData; %各信号を検証するためにデータを保存しておく
     YDataForValidClass3 = YData; %各信号を検証するためにデータを保存しておく
     
-    %%
+    
     %ラベルのごとでデータ数を合わせる
     %各ラベルのインデックス抽出
     categoryIndexes = struct; %indexを格納する構造体作成
@@ -223,7 +223,7 @@ if(load)
     end
     XData = XTemp; YData = YTemp; XTemp = {}; YTemp = {};
     
-    %%
+    
     %信号のシャッフル
     randIndex = randperm(size(YData,1));
     for i = 1:length(randIndex)
@@ -231,14 +231,14 @@ if(load)
         YTemp{i,1} = YData{randIndex(i),1};
     end
     XData = XTemp; YData = YTemp; XTemp = {}; YTemp = {};
-    %%
+    
     %YTrainの変換 , cell配列 --> categorical配列に変換
     temp = string(YData);%いったん文字列配列に変換
     YTemp = categorical(temp);%文字列配列をcategoricalへ
 
     XData = XTemp; YData = YTemp; XTemp = {}; YTemp = {};
     
-    %%
+    
     %データをtrainRateの割合で分割
     sep = cast(d1Len(XData)*trainRate,'uint32'); 
     XTrain = {};
