@@ -1,11 +1,11 @@
 logi = struct;
 %処理分岐
 logi.initialize = true;
-logi.preprocess = false;
-logi.clip       = false;
-logi.load       = true;
+logi.preprocess = true;
+logi.clip       = true;
+logi.load       = false;
 logi.train      = false;
-logi.validation = true;
+logi.validation = false;
 
 if(logi.initialize)
     [f, p] = LoadValiables;
@@ -74,13 +74,13 @@ if(logi.clip)
     end
     %データの保存
     %ディレクトリツリーの探索・取得
-    [~ , dirTree ] = GetDirTree(savePath, struct);
+    [~ , dirTree ] = GetDirTree(p.savePath, struct);
     for i = 1:length(labels)
         dataSet = dataSets{i,1};
         temp = labels(i)
         temp = temp{1,1}
-        [~ , dirTree ] = GetDirTree(savePath, struct);
-        Saver(dataSet, temp,  savePath, dirTree);
+        [~ , dirTree ] = GetDirTree(p.savePath, struct);
+        Saver(dataSet, temp,  p.savePath, dirTree);
     end
 end
 
