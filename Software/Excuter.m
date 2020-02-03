@@ -22,6 +22,9 @@ if(logi.preprocess)
     %最初切り取られた最初を0秒として調整
     preData.timeStamp = preData.timeStamp - preData.timeStamp(1,1); 
     handlingData = preData;
+    
+    %一時的なデータの削除
+    clearvars preData;
 end
 
 if(logi.clip)
@@ -39,31 +42,35 @@ if(logi.clip)
     
     if p.experiNum == 2
         %MultiDisplayのときのc10~c80(アナウンスコマンド時)とc0(非表示コマンド時)のデータを連結 
-        dataSets = dataSets; %置換用データ
-        labels   = labels;   %置換用データ
+        tempDataSets = dataSets; %置換用データ
+        tempLabels   = labels;   %置換用データ
         newDataSets = {}; %置換用データ
         newLabels   = {}; %置換用データ
         setCount = 1;
         nextContinue = false;
-        for i = 1:size(labels,1)
+        for i = 1:size(tempLabels,1)
             if(nextContinue)
                 nextContinue = false;
                 continue;
             end
-            if labels{i,1} == 0
+            if tempLabels{i,1} == 0
                 %labels(i)が0のとき、次のデータと連結して新しい配列に代入
-                newDataSets{setCount,1} = horzcat(dataSets{i,1}, dataSets{i+1,1});
-                newLabels{setCount,1}  = labels{i+1,1};
+                newDataSets{setCount,1} = horzcat(newDataSets{i,1}, newDataSets{i+1,1});
+                newLabels{setCount,1}  = tempLabels{i+1,1};
                 nextContinue = true;
             else
-                newDataSets{setCount,1} = dataSets{i,1};
-                newLabels{setCount,1}  = labels{i,1};
+                newDataSets{setCount,1} = newDataSets{i,1};
+                newLabels{setCount,1}  = tempLabels{i,1};
             end
             setCount = setCount + 1;
+            
         end
         %連結後の配列を元の配列に再代入
         dataSets = newDataSets;
         labels   = newLabels;
+        
+        %一時的なデータの削除
+        clearvars tempDataSets tempLabels newDataSets newLabels setCount nextContinue;
     end
     
     %ラベルの変換
@@ -82,6 +89,10 @@ if(logi.clip)
         [~ , dirTree ] = GetDirTree(p.savePath, struct);
         Saver(dataSet, temp,  p.savePath, dirTree);
     end
+    
+    
+    %一時的なデータの削除
+    clearvars handleData temp;
 end
 
 if(logi.load)
@@ -237,6 +248,10 @@ if(logi.load)
     YTrain = YData(1:sep); %学習用データ y : 正解catetorical配列
     XValid = XData(sep+1 : end); %検証用データ x
     YValid = YData(sep+1 : end); %検証用データ y
+    
+    
+    %一時的なデータの削除
+    clearvars XTemp YTemp usableDataIndex minLen randIndex indexLen;
 end
 
 if(logi.train)
