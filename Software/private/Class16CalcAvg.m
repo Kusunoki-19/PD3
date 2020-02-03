@@ -1,5 +1,6 @@
-sumspe = {};
-avgspe = {};
+function XAvg = Class16CalcAvg(X, Y, f, p)
+XSum = {};
+XAvg = {};
 %validClasses = { ... 
 %    'c1' ,'c2' ,'c3' ,'c4' ,'c5' ,'c6' ,'c7' ,'c8' , ...
 %    'c10','c20','c30','c40','c50','c60','c70','c80'}; 
@@ -12,21 +13,19 @@ count = {...
 % d1List
 % d2List
 
-X = XDataForValidClass16;
-Y = YDataForValidClass16;
 
-for classIndex = d2List(validClasses)
-    sumspe{classIndex} = zeros(XDim,XLen);
-    avgspe{classIndex} = zeros(XDim,XLen);
+for classIndex = f.d2List(p.validClasses)
+    XSum{classIndex} = zeros(p.XDim,p.XLen);
+    XAvg{classIndex} = zeros(p.XDim,p.XLen);
 end
 
 %各データごとでループ
-for dataIndex = d1List(X)
+for dataIndex = f.d1List(Y)
     %各クラスごとで処理の分岐ループ
-    for classIndex = d2List(validClasses)
-        if Y{dataIndex} == validClasses{classIndex}
-            sumspe{classIndex} = ...
-                sumMatrix(sumspe{classIndex}, X{dataIndex});
+    for classIndex = f.d2List(p.validClasses)
+        if Y{dataIndex} == p.validClasses{classIndex}
+            XSum{classIndex} = ...
+                sumMatrix(XSum{classIndex}, X{dataIndex});
             %各クラスごとでデータ数をカウント
             count{classIndex} = count{classIndex} + 1;
         end
@@ -34,13 +33,14 @@ for dataIndex = d1List(X)
 end
 
 
-for classIndex = d2List(validClasses)
-    avgspe{classIndex} = sumspe{classIndex} / count{classIndex};
+for classIndex = f.d2List(p.validClasses)
+    XAvg{classIndex} = XSum{classIndex} / count{classIndex};
+end
 end
 
 function summed = sumMatrix(matrix1, matrix2)
 if size(matrix1)  == size(matrix2)
-    summed = matrix1 + matrix2
+    summed = matrix1 + matrix2;
     %各チャンネルごとで加算
     %{
     for j = 1:channelNum

@@ -1,44 +1,43 @@
-initialize = true;
-preprocess = false;
-clip       = false;
-load       = true;
-train      = false;
-validation = true;
+logi = struct;
+%処理分岐
+logi.initialize = true;
+logi.preprocess = false;
+logi.clip       = false;
+logi.load       = true;
+logi.train      = false;
+logi.validation = true;
 
-if(initialize)
-    LoadValiablesToWorkSpace;
+if(logi.initialize)
+    [f, p] = LoadValiables;
+    p.xfreqencies = CalcFFTFreqencies(p);
 end
 
-if(preprocess)
-    preprocessedData = out;
+if(logi.preprocess)
+    preData = out;
     %最初の数秒を切り取り
     %切り取り秒
-    preprocessedData.label     = ...
-        preprocessedData.label(1+Fs*firstCutsec:end,:);
-    preprocessedData.rawEEG    = ...
-        preprocessedData.rawEEG(1+Fs*firstCutsec:end,:);
-    preprocessedData.timeStamp = ...
-        preprocessedData.timeStamp(1+Fs*firstCutsec:end,:);
+    preData.label     =     preData.label(1+ p.Fs* p.firstCutsec:end,:);
+    preData.rawEEG    =    preData.rawEEG(1+ p.Fs* p.firstCutsec:end,:);
+    preData.timeStamp = preData.timeStamp(1+ p.Fs* p.firstCutsec:end,:);
     %最初切り取られた最初を0秒として調整
-    preprocessedData.timeStamp = ...
-        preprocessedData.timeStamp - preprocessedData.timeStamp(1,1); 
-    handlingData = preprocessedData;
+    preData.timeStamp = preData.timeStamp - preData.timeStamp(1,1); 
+    handlingData = preData;
 end
 
-if(clip)
+if(logi.clip)
     
     %新規フォルダの作成
-    for i = 1:size(validClasses,1)
-        for j = 1:size(validClasses,2)
-            mkdir(strcat(savePath,"\",validClasses{i,j}));
+    for i = 1:size(p.validClasses,1)
+        for j = 1:size(p.validClasses,2)
+            mkdir(strcat(p.savePath,"\",p.validClasses{i,j}));
         end
     end
     
     
     %データの分割
-    [dataSets, labels] = f_clipDataSets(handlingData);
+    [dataSets, labels] = ClipDataSets(handlingData);
     
-    if experiNum == 2
+    if p.experiNum == 2
         %MultiDisplayのときのc10~c80(アナウンスコマンド時)とc0(非表示コマンド時)のデータを連結 
         dataSets = dataSets; %置換用データ
         labels   = labels;   %置換用データ
@@ -85,72 +84,76 @@ if(clip)
     end
 end
 
-if(load)
-    XDataForValidClass3 = {};
-    YDataForValidClass3 = {};
-    XDataForValidClass16 = {};
-    YDataForValidClass16 = {};
+if(logi.load)
     %trainDataPath = strcat(...
     %    "D:\kusunoki\PD3\Software\Data\EEG\", ...
     %    datestr(now,"yyyy\\mm\\dd\\HHMM"));
     
     XData = {};
-    YData = {};
     XTemp = {};
+    YData = {};
     YTemp = {};
     
-    
     %時系列信号のロード
-    [XData, YData] = f_loadDataSets(trainDataPath);
+    [XData, YData] = LoadDataSets( p.trainDataPath);
     
     %信号長の違うデータの除外
     usableDataIndex = [];
-    for i = d1List(XData)
-        if d2Len(XData{i,1}) == sampleLen %信号長を比較
+    for i = f.d1List(XData)
+        if f.d2Len(XData{i,1}) ==  p.sampleLen %信号長を比較
             usableDataIndex(end+1) = i;
         else
             fprintf('unusable data set [i = %d] (unexpected signal length)\n',i);
         end
     end
     
-    for i = dList(usableDataIndex)
+    for i = f.dList(usableDataIndex)
         XTemp{i,1} = XData{usableDataIndex(i),1};
         YTemp{i,1} = YData{usableDataIndex(i),1};
     end
     
-    XData = XTemp; YData = YTemp; XTemp = {}; YTemp = {};
+    XData = XTemp; 
+    XTemp = {}; 
+    YData = YTemp; 
+    YTemp = {};
     
     
     %学習用データへの変換
     %XTrainの変換 , 時系列信号 --> 振幅特性
-    for i = d1List(XData)
+    for i = f.d1List(XData)
         %f_signalConverter --> デシベル変換後の値
         %[XTemp{i,1}, XDim,XLen] = ...
-        %    f_signalConverter(XData{i,1},Fs,cutFreqL,cutFreqH);
+        %    f_signalConverter(XData{i,1},Fs, param.cutFreqL, param.cutFreqH);
         %f_signalConverter2 --> デシベル変換前の値
-        [XTemp{i,1}, XDim,XLen] = ...
-            f_signalConverter2(XData{i,1},Fs,cutFreqL,cutFreqH);
+        [XTemp{i,1}, p.XDim,p.XLen] = ...
+            SignalConverter2(XData{i,1}, p.Fs, p.cutFreqL, p.cutFreqH);
     end
     
-    XData = XTemp; YData = YTemp; XTemp = {}; YTemp = {};
-    XDataForValidClass16 = XData; %各信号を検証するためにデータを保存しておく
-    YDataForValidClass16 = YData; %各信号を検証するためにデータを保存しておく
+    XData = XTemp; 
+    XTemp = {}; 
+    
+    %16Classのときの検証用データ
+    if logi.validation && ( p.experiNum == 2)
+        figure;
+        YAvg = Class16CalcAvg(XData, YData, f, p);
+        Class16PlotAvg(YAvg, f, p);
+    end
     
     
     %検証用分割のラベルを学習用分割のラベルに変換
-    if experiNum == 2
+    if  p.experiNum == 2
         YTemp = YData;    
-        for i = d1List(YData)
-            if isStrMatchInCell(YTemp{i,1}, ...
+        for i = f.d1List(YData)
+            if f.isStrMatchInCell(YTemp{i,1}, ...
                     {'c10','c20','c30','c40','c50','c60','c70','c80'})
                  %ラベルがc10～80のときc0に変換
                  YTemp{i,1} = 'c0';
 
-            elseif isStrMatchInCell(YTemp{i,1},{'c1','c2','c4','c5'})
+            elseif f.isStrMatchInCell(YTemp{i,1},{'c1','c2','c4','c5'})
                  %ラベルがc1,2,4,5のときc1(ボール)に変換
                  YTemp{i,1} = 'c1';
 
-            elseif isStrMatchInCell(YTemp{i,1}, {'c3','c6','c7','c8'})
+            elseif f.isStrMatchInCell(YTemp{i,1}, {'c3','c6','c7','c8'})
                  %ラベルがc3,6,7,8のときc2(スティック)に変換
                  YTemp{i,1} = 'c2';
 
@@ -158,19 +161,24 @@ if(load)
                  YTemp{i,1} = 'cx'; %どれにも当てはまらなかった謎ラベル
             end
         end
-        XData = XTemp; YData = YTemp; XTemp = {}; YTemp = {};
+    
+        YData = YTemp; 
+        YTemp = {};
     end
     
-    XDataForValidClass3 = XData; %各信号を検証するためにデータを保存しておく
-    YDataForValidClass3 = YData; %各信号を検証するためにデータを保存しておく
-    
+    %3Classのときの検証用データ
+    if logi.validation && (( p.experiNum == 1) || ( p.experiNum == 2))
+        figure;
+        YAvg = Class3CalcAvg(XData, YData, f, p);
+        Class3PlotAvg(YAvg, f, p);
+    end    
     
     %ラベルのごとでデータ数を合わせる
     %各ラベルのインデックス抽出
     categoryIndexes = struct; %indexを格納する構造体作成
-    for i = trainClasses(1,:)
+    for i = p.trainClasses(1,:)
         categoryIndex = [];
-        for j = d1List(YData)
+        for j = f.d1List(YData)
             if i{1,1} == YData{j,1}
                 categoryIndex(end+1) = j;
             end
@@ -179,7 +187,7 @@ if(load)
     end
     
     minLen = 0;
-    for fieldName = fieldList(categoryIndexes)
+    for fieldName = f.fieldList(categoryIndexes)
         indexLen = length(getfield(categoryIndexes, fieldName));
         if minLen == 0
             minLen = indexLen;
@@ -187,13 +195,16 @@ if(load)
             minLen = indexLen;
         end
     end
-    for fieldName = fieldList(categoryIndexes)
+    for fieldName = f.fieldList(categoryIndexes)
         categoryIndex = getfield(categoryIndexes,fieldName);
         XTemp(end+1:end+minLen, 1) = XData(categoryIndex(1:minLen), 1); 
         YTemp(end+1:end+minLen, 1) = YData(categoryIndex(1:minLen), 1);        
     end
-    XData = XTemp; YData = YTemp; XTemp = {}; YTemp = {};
     
+    XData = XTemp; 
+    XTemp = {}; 
+    YData = YTemp; 
+    YTemp = {};
     
     %信号のシャッフル
     randIndex = randperm(size(YData,1));
@@ -201,17 +212,22 @@ if(load)
         XTemp{i,1} = XData{randIndex(i),1};
         YTemp{i,1} = YData{randIndex(i),1};
     end
-    XData = XTemp; YData = YTemp; XTemp = {}; YTemp = {};
+    
+    XData = XTemp; 
+    XTemp = {}; 
+    YData = YTemp; 
+    YTemp = {};
     
     %YTrainの変換 , cell配列 --> categorical配列に変換
     temp = string(YData);%いったん文字列配列に変換
     YTemp = categorical(temp);%文字列配列をcategoricalへ
-
-    XData = XTemp; YData = YTemp; XTemp = {}; YTemp = {};
+    
+    YData = YTemp; 
+    YTemp = {};
     
     
     %データをtrainRateの割合で分割
-    sep = cast(d1Len(XData)*trainRate,'uint32'); 
+    sep = cast(f.d1Len(XData)*p.trainRate,'uint32'); 
     XTrain = {};
     YTrain = {};
     XValid = {};
@@ -223,9 +239,9 @@ if(load)
     YValid = YData(sep+1 : end); %検証用データ y
 end
 
-if(train)
+if(logi.train)
     layers = [ ...
-        sequenceInputLayer(XDim)
+        sequenceInputLayer(p.XDim)
         bilstmLayer(512,'OutputMode','last')
         
         fullyConnectedLayer(512)
@@ -250,17 +266,12 @@ if(train)
     
     save(strcat(pwd,'\Data\Networks\TESTClassifierNet.mat'),'TESTClassifierNet');
     %学習結果の解析()confuion matrix
-    calcConfusionMatrix;
+    if logi.validation
+        figure;
+        calcConfusionMatrix;
+    end
 end
 
-if(validation)
-    %学習データの解析
-    class3CalcAvg;
-    figure;
-    class3PlotAvg;
-    %figure;
-    %class3PlotDiff;
-end
 
 function [] = Saver(val, saveLabel, saveDir, dirTree)
 fieldNames = fieldnames(dirTree);

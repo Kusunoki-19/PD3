@@ -1,12 +1,10 @@
+function Class16PlotAvg(YAvg, f, p)
 COL = 2; %2óÒ
 ROW = 8; %8çs
 col = 1;
 row = 1;
-%validClasses = { ... 
-%    'c1' ,'c2' ,'c3' ,'c4' ,'c5' ,'c6' ,'c7' ,'c8' , ...
-%    'c10','c20','c30','c40','c50','c60','c70','c80'}; 
 
-for classIndex = d2List(validClasses)
+for classIndex = f.d2List(p.validClasses)
     if classIndex <= 8 
         col = 2; %c1 ~ c8
     else
@@ -31,20 +29,15 @@ for classIndex = d2List(validClasses)
             row = 8;
     end
     
-    subploter(ROW, COL, row, col);
-    xfreqencies = cutFreqL:((cutFreqH - cutFreqL)/XLen):cutFreqH;
-    xfreqencies = xfreqencies(1:end-1);
-    plot(xfreqencies,avgspe{classIndex});
+    f.subplotter(ROW, COL, row, col);
+    plot(p.xfreqencies,YAvg{classIndex});
     xlim([0,40]);
     ylim([-25,60]);
-
-    title(strcat("data label '",validClasses{classIndex}, "'"))
-    xlabel('freqency [Hz]');
-    ylabel('magnitude [dB]');
-    legend('O2 - P4','O1 - P3','O2 - T6','O1 - T5','T6 - T4','T5 - T3','T4 - CP6','T3 - CP3'); 
+    titleName = strcat("data label '",p.validClasses{classIndex}, "'");
+    title(titleName,'FontSize',p.fig.fontsize);
     
+    xlabel('freqency [Hz]','FontSize',p.fig.fontsize);
+    ylabel('magnitude [dB]','FontSize',p.fig.fontsize);
+    legend('O2 - P4','O1 - P3','O2 - T6','O1 - T5','T6 - T4','T5 - T3','T4 - CP6','T3 - CP3'); 
 end
-
-function subploter(rownum,colnum,r,c)
-subplot(rownum,colnum,(r-1)*colnum + c)
 end
