@@ -1,28 +1,10 @@
 function [func, param] = LoadValiables
 %%
-%処理群をまとめた構造体
-%%
-func = struct;
-%1次元配列のインデックスリスト取り出し用の無名関数の関数ハンドル
-func.dList = @(list) 1:length(list);
-%多次元配列の1,2次元のインデックスリスト取り出し用の無名関数の関数ハンドル
-func.d1List = @(Matrix) 1:size(Matrix,1);
-func.d2List = @(Matrix) 1:size(Matrix,2);
-%構造体のフィールド文字列リスト取得用の無名関数の関数ハンドル
-func.fieldList = @(Struct) string(transpose(fieldnames(Struct)));
-%多次元配列の1,2次元の長さ取り出し用の無名関数の関数ハンドル
-func.d1Len = @(Matrix) size(Matrix,1);
-func.d2Len = @(Matrix) size(Matrix,2);
-%比較用無名関数の関数ハンドル
-func.isStrMatchInCell = @(str, cellStr) any(strcmp(str,cellStr),'all');
-
-%サブプロット
-func.subplotter = @(ROW, COL, row, col) subplot(ROW,COL,(row-1)*COL + col);
-%%
 %パラメータをまとめた構造体
 param = struct;
 %%
-
+%実験番号
+param.experiNum = 1;
 %サンプリング周波数
 param.Fs = 1000;
 %一区間のデータ長[s]
@@ -31,8 +13,6 @@ param.sampleTime = 5;
 param.sampleLen = param.Fs * param.sampleTime;
 %チャンネル個数
 param.channelNum = 8;
-%実験番号
-param.experiNum = 2;
 %学習用ラベル
 param.trainClasses = {'c0','c1','c2'}; %ball, stick, none : c1 c2 c0
 %実験2の学習用ラベル
@@ -68,6 +48,25 @@ param.trainRate = 0.75;
 param.fig.xlim1 = 9.3;
 param.fig.xlim2 = 13.1;
 param.fig.ylim1 = 0.5;
-param.fig.ylim2 = 5;
+param.fig.ylim2 = 2.5;
 param.fig.fontsize = 10;
+%%
+%処理群をまとめた構造体
+%%
+func = struct;
+%1次元配列のインデックスリスト取り出し用の無名関数の関数ハンドル
+func.dList = @(list) 1:length(list);
+%多次元配列の1,2次元のインデックスリスト取り出し用の無名関数の関数ハンドル
+func.d1List = @(Matrix) 1:size(Matrix,1);
+func.d2List = @(Matrix) 1:size(Matrix,2);
+%構造体のフィールド文字列リスト取得用の無名関数の関数ハンドル
+func.fieldList = @(Struct) string(transpose(fieldnames(Struct)));
+%多次元配列の1,2次元の長さ取り出し用の無名関数の関数ハンドル
+func.d1Len = @(Matrix) size(Matrix,1);
+func.d2Len = @(Matrix) size(Matrix,2);
+%比較用無名関数の関数ハンドル
+func.isStrMatchInCell = @(str, cellStr) any(strcmp(str,cellStr),'all');
+
+%サブプロット
+func.subplotter = @(ROW, COL, row, col) subplot(ROW,COL,(row-1)*COL + col);
 end

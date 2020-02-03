@@ -1,11 +1,11 @@
 logi = struct;
 %処理分岐
 logi.initialize = true;
-logi.preprocess = true;
-logi.clip       = true;
-logi.load       = false;
+logi.preprocess = false;
+logi.clip       = false;
+logi.load       = true;
 logi.train      = false;
-logi.validation = false;
+logi.validation = true;
 
 if(logi.initialize)
     [f, p] = LoadValiables;
@@ -70,7 +70,7 @@ if(logi.clip)
         labels   = newLabels;
         
         %一時的なデータの削除
-        clearvars tempDataSets tempLabels newDataSets newLabels setCount nextContinue;
+        clearvars tempDataSets tempLabels newDataSets newLabels setCount nextContinue i j;
     end
     
     %ラベルの変換
@@ -92,7 +92,7 @@ if(logi.clip)
     
     
     %一時的なデータの削除
-    clearvars handleData temp;
+    clearvars handleData temp i j  i j;
 end
 
 if(logi.load)
@@ -251,7 +251,7 @@ if(logi.load)
     
     
     %一時的なデータの削除
-    clearvars XTemp YTemp usableDataIndex minLen randIndex indexLen;
+    clearvars XTemp YTemp usableDataIndex minLen randIndex indexLen i j temp;
 end
 
 if(logi.train)
