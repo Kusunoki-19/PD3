@@ -36,8 +36,10 @@ for classIndex = f.d2List(p.validClasses)
     titleName = strcat("data label '",p.validClasses{classIndex}, "'");
     title(titleName,'FontSize',p.fig.fontsize);
     
+    xlim([p.fig.xlim1 p.fig.xlim2]);
+    ylim([p.fig.ylim1 p.fig.ylim2]);
     xlabel('freqency [Hz]','FontSize',p.fig.fontsize);
-    ylabel('magnitude [dB]','FontSize',p.fig.fontsize);
-    legend('O2 - P4','O1 - P3','O2 - T6','O1 - T5','T6 - T4','T5 - T3','T4 - CP6','T3 - CP3'); 
+    ylabel('Amplitude','FontSize',p.fig.fontsize);
+    %legend('O2 - P4','O1 - P3','O2 - T6','O1 - T5','T6 - T4','T5 - T3','T4 - CP6','T3 - CP3'); 
 end
 end

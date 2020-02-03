@@ -36,7 +36,6 @@ if(logi.clip)
         end
     end
     
-    
     %ƒf[ƒ^‚Ì•ªŠ„
     [dataSets, labels] = ClipDataSets(handlingData);
     

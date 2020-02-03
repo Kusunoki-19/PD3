@@ -4,8 +4,8 @@ function [func, param] = LoadValiables
 param = struct;
 %%
 %実験番号
-param.experiNum = 1;
-%サンプリング周波数
+param.experiNum = 2;
+%サンプリング周波数[Hz]
 param.Fs = 1000;
 %一区間のデータ長[s]
 param.sampleTime = 5;
@@ -34,7 +34,7 @@ end
 param.trainDataPath = param.dataPath;
 param.savePath = strcat(...
     param.dataPath, "\", ...
-    datestr(now,"yyyy\\mm\\dd\\HHMM"));
+    datestr(now,"yyyymmddHHMM"));
 %クリップ前の切り取る信号[s]
 param.firstCutsec = 10;
 %カット周波数(low)[Hz]
@@ -46,10 +46,14 @@ param.trainRate = 0.75;
 
 %figure設定
 param.fig.xlim1 = 9.3;
-param.fig.xlim2 = 13.1;
+param.fig.xlim2 = param.fig.xlim1 + 4;
 param.fig.ylim1 = 0.5;
-param.fig.ylim2 = 2.5;
+param.fig.ylim2 = param.fig.ylim1 + 4;
 param.fig.fontsize = 10;
+
+deltaXTick = 0.5;
+param.fig.xtick = param.cutFreqL:deltaXTick:param.cutFreqH;
+param.fig.isSetStyle = false;
 %%
 %処理群をまとめた構造体
 %%

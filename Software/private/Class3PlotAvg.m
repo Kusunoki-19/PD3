@@ -1,5 +1,4 @@
 function Class3PlotAvg(XAvg, f, p)
-isSetStyle = true;
 for n = 1:3
     %{
     subplot(3,2,n*2 - 1);
@@ -16,9 +15,9 @@ for n = 1:3
     else
         titleName = "Stick";
     end
-    if isSetStyle
+    if p.fig.isSetStyle
         title(titleName,'FontSize',p.fig.fontsize);
-        set(subplot1,'XTick',p.xfreqencies);
+        set(subplot1,'XTick',p.fig.xtick);
         set(plot1(1),'DisplayName','O2 - P4','MarkerSize',4,'LineStyle','none','Marker','o');
         set(plot1(2),'DisplayName','O1 - P3','MarkerSize',4,'LineStyle','none','Marker','p');
         set(plot1(3),'DisplayName','O2 - T6','MarkerSize',4,'LineStyle','none','Marker','s');
@@ -32,6 +31,7 @@ for n = 1:3
         xlim([p.fig.xlim1 p.fig.xlim2]);
         ylim([p.fig.ylim1 p.fig.ylim2]);
         xlabel('freqency [Hz]','FontSize',p.fig.fontsize);
+        ylabel('Amplitude','FontSize',p.fig.fontsize);
     end
 end
 end
