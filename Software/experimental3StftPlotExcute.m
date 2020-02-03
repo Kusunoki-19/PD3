@@ -1,15 +1,13 @@
-for c = 1:5
+for c = 1:4
     if c == 1
-        out = out41;
+        out = out1;
     elseif c == 2
-        out = out42;
+        out = out2;
     elseif c == 3
-        out = out43;
+        out = out3;
     elseif c == 4
-        out = out44;
-    elseif c == 5
-        out = out45;
+        out = out4;
     end
     figure(c);
-    experimental4StftPlot
+    Experimental3StftPlot;
 end

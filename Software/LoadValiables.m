@@ -43,17 +43,18 @@ param.cutFreqL = 0;
 param.cutFreqH = 200;
 %学習データと検証データの割合0~1
 param.trainRate = 0.75;
-
+%%
 %figure設定
-param.fig.xlim1 = 9.3;
-param.fig.xlim2 = param.fig.xlim1 + 4;
-param.fig.ylim1 = 0.5;
-param.fig.ylim2 = param.fig.ylim1 + 4;
-param.fig.fontsize = 10;
+param.fig.xlim1 = 9;
+param.fig.xlim2 = 13;
+param.fig.ylim1 = 0;
+param.fig.ylim2 = 5.3;
+param.fig.fontsize = 16;
+param.fig.markersize = 4;
 
 deltaXTick = 0.5;
 param.fig.xtick = param.cutFreqL:deltaXTick:param.cutFreqH;
-param.fig.isSetStyle = false;
+param.fig.isSetStyle = true;
 %%
 %処理群をまとめた構造体
 %%
